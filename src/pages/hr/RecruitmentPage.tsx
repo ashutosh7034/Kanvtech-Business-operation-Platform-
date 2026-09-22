@@ -5,7 +5,7 @@ import { MOCK_CANDIDATES } from '../../data/mockData';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { RecruitmentJob, Candidate } from '../../types';
-import { UserPlus, Star } from 'lucide-react';
+import { UserPlus, Star, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 
 export const RecruitmentPage: React.FC = () => {
   const { openHiringModal } = useModalDrawer();
@@ -110,10 +110,10 @@ export const RecruitmentPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
-          <div className="section-breadcrumb">Recruitment &gt; Talent Acquisition &amp; Pipeline</div>
-          <h1 className="greeting-title">Recruitment</h1>
+          <div className="section-breadcrumb">Recruitment &gt; Hiring Pipeline, Workforce Demand &amp; Recruitment Performance</div>
+          <h1 className="greeting-title">Recruitment Operations</h1>
           <p className="greeting-subtitle">
-            14 open positions · 4 critical field requisitions · 182 active candidates
+            14 open positions · 4 critical field requisitions · 182 active candidates across 5 regional hubs
           </p>
         </div>
         <button className="btn-primary" onClick={() => openHiringModal()}>
@@ -122,27 +122,105 @@ export const RecruitmentPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Summary */}
-      <div className="ops-summary-strip">
-        <div className="ops-summary-block">
-          <span className="ops-summary-label" style={{ color: 'var(--status-critical-dot)' }}>Open Positions</span>
-          <span className="ops-summary-val" style={{ color: 'var(--status-critical-dot)' }}>14</span>
-          <span className="ops-summary-sub">4 critical Field Ops</span>
+      {/* 6-Card Metric Strip */}
+      <div className="executive-brief-strip six-col">
+        <div className="brief-cell">
+          <div className="brief-label" style={{ color: 'var(--status-critical-dot)' }}>OPEN POSITIONS</div>
+          <div className="brief-val" style={{ color: 'var(--status-critical-dot)' }}>14</div>
+          <div className="brief-sub">4 critical Field Ops</div>
         </div>
-        <div className="ops-summary-block">
-          <span className="ops-summary-label">Active Applicants</span>
-          <span className="ops-summary-val">182</span>
-          <span className="ops-summary-sub">Across 5 hubs</span>
+        <div className="brief-cell">
+          <div className="brief-label">APPLICATIONS</div>
+          <div className="brief-val">182</div>
+          <div className="brief-sub">Across 5 hubs</div>
         </div>
-        <div className="ops-summary-block">
-          <span className="ops-summary-label">In Technical Review</span>
-          <span className="ops-summary-val">36</span>
-          <span className="ops-summary-sub">12 for HVAC</span>
+        <div className="brief-cell">
+          <div className="brief-label">IN PROCESS</div>
+          <div className="brief-val">36</div>
+          <div className="brief-sub">12 in technical review</div>
         </div>
-        <div className="ops-summary-block">
-          <span className="ops-summary-label">Offers Extended</span>
-          <span className="ops-summary-val" style={{ color: 'var(--status-healthy-dot)' }}>9</span>
-          <span className="ops-summary-sub">2 accepted this week</span>
+        <div className="brief-cell">
+          <div className="brief-label">OFFERS EXTENDED</div>
+          <div className="brief-val" style={{ color: 'var(--status-healthy-dot)' }}>9</div>
+          <div className="brief-sub">2 accepted this week</div>
+        </div>
+        <div className="brief-cell">
+          <div className="brief-label">AVG TIME TO HIRE</div>
+          <div className="brief-val">24 Days</div>
+          <div className="brief-sub" style={{ color: 'var(--status-healthy-dot)' }}>-4 days vs benchmark</div>
+        </div>
+        <div className="brief-cell">
+          <div className="brief-label">OFFER ACCEPTANCE</div>
+          <div className="brief-val" style={{ color: 'var(--status-healthy-dot)' }}>88.5%</div>
+          <div className="brief-sub">Target &ge; 85%</div>
+        </div>
+      </div>
+
+      {/* Row 1: Funnel & Department Positions */}
+      <div className="two-col-grid">
+        <div className="section-panel">
+          <div className="section-panel-header">
+            <span className="section-panel-title">Hiring Funnel Conversion</span>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>182 Applicants &rarr; 7 Hires</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 4 }}>
+            {[
+              { stage: '1. Applied / Inflow', count: 182, pct: 100, color: '#17202A' },
+              { stage: '2. Screened & Qualified', count: 84, pct: 46.2, color: '#0F766E' },
+              { stage: '3. Technical Interview', count: 36, pct: 19.8, color: '#5F6B76' },
+              { stage: '4. Executive Offer Stage', count: 9, pct: 4.9, color: '#8898AA' },
+              { stage: '5. Joined / Onboarded', count: 7, pct: 3.8, color: '#0F766E' },
+            ].map((item) => (
+              <div key={item.stage}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                  <span style={{ fontWeight: 500 }}>{item.stage}</span>
+                  <span style={{ fontWeight: 600 }}>{item.count} candidates ({item.pct}%)</span>
+                </div>
+                <div style={{ width: '100%', height: 6, backgroundColor: 'var(--bg-subtle)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${item.pct}%`, height: '100%', backgroundColor: item.color, borderRadius: 3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Source of Hire & Attention */}
+        <div className="section-panel">
+          <div className="section-panel-header">
+            <span className="section-panel-title">What Needs Attention</span>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Staffing Velocity</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--status-critical-dot)' }}>
+                <AlertCircle size={13} />
+                <span>Urgent: 4 HVAC Technicians for Mumbai Hub</span>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                Requisitions open for 18 days. 6 candidates screened, 2 technical tests scheduled for tomorrow.
+              </p>
+            </div>
+
+            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--status-healthy-dot)' }}>
+                <CheckCircle2 size={13} />
+                <span>Engineering Lead Candidate Accepted Offer</span>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                Karthik Raman joining Bengaluru engineering team on Oct 05. Background verification cleared.
+              </p>
+            </div>
+
+            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--brand-primary)' }}>
+                <TrendingUp size={13} />
+                <span>Employee Referral Drive Contributing 26% of Pipeline</span>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                Referral bonuses scheduled for disbursement in next month's payroll cycle.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -166,7 +244,7 @@ export const RecruitmentPage: React.FC = () => {
 
       {activeTab === 'positions' ? (
         <DataTable
-          title="Active Requisitions"
+          title="Active Requisitions Queue"
           data={recruitmentJobs}
           columns={jobColumns}
           keyExtractor={(j) => j.id}
@@ -174,7 +252,7 @@ export const RecruitmentPage: React.FC = () => {
         />
       ) : (
         <DataTable
-          title="Candidate Pipeline"
+          title="Candidate Pipeline Register"
           data={MOCK_CANDIDATES}
           columns={candidateColumns}
           keyExtractor={(c) => c.id}

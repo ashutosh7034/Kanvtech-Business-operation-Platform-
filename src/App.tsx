@@ -20,6 +20,7 @@ import { HrDashboard } from './pages/hr/HrDashboard';
 import { PeopleDirectoryPage } from './pages/hr/PeopleDirectoryPage';
 import { RecruitmentPage } from './pages/hr/RecruitmentPage';
 import { AttendancePage } from './pages/hr/AttendancePage';
+import { LeavePage } from './pages/hr/LeavePage';
 import { PerformancePage } from './pages/hr/PerformancePage';
 import { SkillsCertificationsPage } from './pages/hr/SkillsCertificationsPage';
 import { TrainingPage } from './pages/hr/TrainingPage';
@@ -95,6 +96,8 @@ const AppContent: React.FC = () => {
           return <RecruitmentPage />;
         case 'attendance':
           return <AttendancePage />;
+        case 'leave':
+          return <LeavePage />;
         case 'performance':
           return <PerformancePage />;
         case 'skills_certs':

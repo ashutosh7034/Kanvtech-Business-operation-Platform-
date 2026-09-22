@@ -123,7 +123,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       label: 'Operations',
       items: [
-        { id: 'attendance', label: 'Attendance & Leave', icon: Calendar, badge: '10 absent', badgeType: 'warning' },
+        { id: 'attendance', label: 'Attendance', icon: Calendar, badge: '10 absent', badgeType: 'warning' },
+        { id: 'leave', label: 'Leave', icon: Calendar, badge: '18 pending', badgeType: 'warning' },
         { id: 'performance', label: 'Performance', icon: TrendingUp },
         { id: 'skills_certs', label: 'Skills & Certs', icon: Award, badge: '9 expiring', badgeType: 'warning' },
         { id: 'training', label: 'Training', icon: BookOpen },
