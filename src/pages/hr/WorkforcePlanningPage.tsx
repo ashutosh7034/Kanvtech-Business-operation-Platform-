@@ -14,6 +14,7 @@ export const WorkforcePlanningPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Workforce Planning &gt; Capacity Modeling &amp; Simulation</div>
           <h1 className="greeting-title">Capacity Planning</h1>
           <p className="greeting-subtitle">
             Model headcount additions, overtime reduction, and SLA recovery impact

@@ -49,6 +49,7 @@ export const TrainingPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Training &gt; Safety &amp; Operational Training</div>
           <h1 className="greeting-title">Training</h1>
           <p className="greeting-subtitle">
             86% overall training completion rate · 145 active enrolled personnel

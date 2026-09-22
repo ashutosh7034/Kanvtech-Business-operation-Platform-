@@ -67,6 +67,7 @@ export const ContractsPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Contracts &gt; Master Service Agreements (MSAs)</div>
           <h1 className="greeting-title">Contracts</h1>
           <p className="greeting-subtitle">
             112 active Master Service Agreements · Total portfolio ACV: ₹18.7 Cr

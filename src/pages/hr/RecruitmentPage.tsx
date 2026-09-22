@@ -110,6 +110,7 @@ export const RecruitmentPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Recruitment &gt; Talent Acquisition &amp; Pipeline</div>
           <h1 className="greeting-title">Recruitment</h1>
           <p className="greeting-subtitle">
             14 open positions · 4 critical field requisitions · 182 active candidates

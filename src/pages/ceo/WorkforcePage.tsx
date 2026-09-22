@@ -16,6 +16,7 @@ export const WorkforcePage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Workforce &gt; Regional Capacity &amp; Resource Deployment</div>
           <h1 className="greeting-title">Workforce Capacity</h1>
           <p className="greeting-subtitle">
             428 total employees · 397 present on duty · -13 deficit in Mumbai Field Operations

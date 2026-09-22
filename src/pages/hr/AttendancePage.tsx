@@ -55,7 +55,8 @@ export const AttendancePage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
-          <h1 className="greeting-title">Attendance & Leave</h1>
+          <div className="section-breadcrumb">Attendance &gt; Attendance &amp; Leave Tracking</div>
+          <h1 className="greeting-title">Attendance &amp; Leave</h1>
           <p className="greeting-subtitle">
             397 present (92.8%) · 21 approved leave · 10 unplanned absent across 5 regional hubs
           </p>

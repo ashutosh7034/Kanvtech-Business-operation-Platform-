@@ -65,6 +65,7 @@ export const PerformancePage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Performance &gt; Performance Scorecards &amp; Appraisals</div>
           <h1 className="greeting-title">Performance</h1>
           <p className="greeting-subtitle">
             87% company average appraisal score · 81% goals completed · 42 top performers

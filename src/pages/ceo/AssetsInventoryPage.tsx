@@ -93,6 +93,7 @@ export const AssetsInventoryPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Assets &amp; Inventory &gt; Facilities &amp; Equipment Registry</div>
           <h1 className="greeting-title">Asset Management</h1>
           <p className="greeting-subtitle">
             1,284 tracked assets · 91.6% operational health across 5 regional plant hubs

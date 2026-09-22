@@ -54,6 +54,7 @@ export const SkillsCertificationsPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Skills &amp; Certifications &gt; Credential Management</div>
           <h1 className="greeting-title">Skills &amp; Certifications</h1>
           <p className="greeting-subtitle">
             318 certified personnel · 9 expiries in 30 days · 3 expired records

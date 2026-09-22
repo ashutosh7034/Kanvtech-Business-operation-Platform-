@@ -499,6 +499,22 @@ a:hover {
 /* ==========================================================
    PAGE HEADERS & FILTER TOOLBAR
    ========================================================== */
+.section-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.section-breadcrumb span.current {
+  color: var(--brand-primary);
+}
+
 .section-header-wrap {
   display: flex;
   align-items: flex-start;
@@ -597,6 +613,10 @@ a:hover {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
+}
+
+.executive-brief-strip.six-col {
+  grid-template-columns: repeat(6, 1fr);
 }
 
 .executive-brief-cell {
@@ -1433,6 +1453,10 @@ a:hover {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .executive-brief-strip.six-col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .hr-brief-strip {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1446,6 +1470,10 @@ a:hover {
 @media (max-width: 767px) {
   .executive-brief-strip, .ops-summary-strip, .hr-secondary-strip {
     grid-template-columns: 1fr;
+  }
+
+  .executive-brief-strip.six-col {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .hr-brief-strip {

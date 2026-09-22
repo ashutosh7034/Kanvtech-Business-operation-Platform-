@@ -10,6 +10,10 @@ import {
   TrendingDown,
   ArrowRight,
   Search,
+  ChevronRight,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface CeoDashboardProps {
@@ -37,10 +41,15 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       {/* 1. Header & Context */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">
+            <span>Overview</span>
+            <ChevronRight size={11} />
+            <span className="current">Business Performance</span>
+          </div>
           <h1 className="greeting-title">CEO Overview</h1>
           <div className="greeting-subtitle">
             <span>Monday, 22 September 2026</span>
@@ -55,36 +64,36 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
         <FilterBar />
       </div>
 
-      {/* 2. Business at a Glance */}
-      <div className="executive-brief-strip">
+      {/* 2. Executive Metric Strip (6 Cards Aligned) */}
+      <div className="executive-brief-strip six-col">
         {/* Revenue */}
         <div className="executive-brief-cell" onClick={openFinancialInvestigation} title="Click to view financial position">
           <span className="brief-label">{rev.label}</span>
           <span className="brief-value">₹{rev.current}L</span>
           <div className={`brief-trend ${rev.growth >= 0 ? 'positive' : 'negative'}`}>
-            {rev.growth >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-            <span>+{rev.growth}% YoY vs prior</span>
+            {rev.growth >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+            <span>+{rev.growth}% YoY</span>
           </div>
           <span className="brief-subtext">Target: ₹{rev.target}L</span>
         </div>
 
         {/* Operating Margin */}
         <div className="executive-brief-cell" onClick={openFinancialInvestigation} title="Click to view margin analysis">
-          <span className="brief-label">Operating Margin</span>
+          <span className="brief-label">Gross Margin</span>
           <span className="brief-value">{fin.marginPct}%</span>
           <div className={`brief-trend ${fin.variancePp >= 0 ? 'positive' : 'negative'}`}>
-            {fin.variancePp >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+            {fin.variancePp >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
             <span>{fin.variancePp}pp vs target</span>
           </div>
-          <span className="brief-subtext">Overtime: ₹{fin.overtimeCost}L ({fin.overtimeHours}h)</span>
+          <span className="brief-subtext">Overtime: ₹{fin.overtimeCost}L</span>
         </div>
 
         {/* SLA Compliance */}
         <div className="executive-brief-cell" onClick={openSlaInvestigation} title="Click to investigate SLA delivery">
-          <span className="brief-label">SLA Delivery</span>
+          <span className="brief-label">SLA Compliance</span>
           <span className="brief-value">{sla.compliance}%</span>
           <div className={`brief-trend ${sla.variancePp >= 0 ? 'positive' : 'negative'}`}>
-            {sla.variancePp >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+            {sla.variancePp >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
             <span>{sla.variancePp}pp vs target ({sla.target}%)</span>
           </div>
           <span className="brief-subtext">{sla.atRiskCount} at risk · {sla.criticalCount} critical</span>
@@ -95,107 +104,153 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
           <span className="brief-label">{workforce.availableLabel}</span>
           <span className="brief-value">{workforce.available} / {workforce.totalHeadcount}</span>
           <div className={`brief-trend ${workforce.gap >= 0 ? 'positive' : 'negative'}`}>
-            <span>{workforce.gap < 0 ? `${workforce.gap} capacity gap` : 'Full capacity'}</span>
+            <span>{workforce.gap < 0 ? `${workforce.gap} gap` : 'Full capacity'}</span>
           </div>
           <span className="brief-subtext">Mumbai: -13 field gap</span>
         </div>
-      </div>
 
-      {/* 3. The Business Right Now (Editorial Operational Notice) */}
-      <div className="editorial-notice-panel">
-        <div className="editorial-notice-header">
-          <span className="editorial-notice-tag">Attention</span>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>High Operational Priority</span>
+        {/* Customers */}
+        <div className="executive-brief-cell" onClick={() => onNavigateTab('customers')} title="Click to view customer accounts">
+          <span className="brief-label">Customer Portfolio</span>
+          <span className="brief-value">86</span>
+          <div className="brief-trend" style={{ color: 'var(--status-critical-dot)' }}>
+            <span>4 requiring attention</span>
+          </div>
+          <span className="brief-subtext">₹48.6L monthly run-rate</span>
         </div>
 
-        <div className="editorial-headline">
-          Mumbai field capacity is 13 technicians below today's requirement. 18 work orders are affected, with 4 in critical SLA windows. Estimated contract exposure: ₹12.4L.
-        </div>
-
-        <div className="editorial-metrics-grid">
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Location Hub</span>
-            <span className="editorial-metric-val">Mumbai (Field Ops)</span>
+        {/* Contracts */}
+        <div className="executive-brief-cell" onClick={() => onNavigateTab('contracts')} title="Click to view contracts">
+          <span className="brief-label">Active Contracts</span>
+          <span className="brief-value">112</span>
+          <div className="brief-trend" style={{ color: 'var(--status-attention-dot)' }}>
+            <span>7 renewing &lt; 30d</span>
           </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Staffing Deficit</span>
-            <span className="editorial-metric-val" style={{ color: 'var(--status-critical-dot)' }}>71 / 84 Staff (-13)</span>
-          </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Service Impact</span>
-            <span className="editorial-metric-val">18 Orders (4 Critical)</span>
-          </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Contract Exposure</span>
-            <span className="editorial-metric-val">₹12.4L (Acme & Meridian)</span>
-          </div>
-        </div>
-
-        <div className="editorial-notice-footer">
-          <span>Primary driver: HVAC technician availability in Mumbai central district.</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <button className="action-link-btn" onClick={openSlaInvestigation}>
-              <span>Investigate SLA</span>
-              <ArrowRight size={13} />
-            </button>
-            <button className="action-link-btn" onClick={openDecisionSupport}>
-              <span>Simulate Options</span>
-              <ArrowRight size={13} />
-            </button>
-          </div>
+          <span className="brief-subtext">₹18.7 Cr Total ACV</span>
         </div>
       </div>
 
-      {/* 4. Business Performance (Revenue Trajectory Chart) */}
-      <div className="section-panel">
-        <div className="section-panel-header">
-          <span className="section-panel-title">Business Performance & Revenue Trajectory</span>
-          <button className="action-link-btn" onClick={openFinancialInvestigation}>
-            <span>View Financial Position</span>
-            <ArrowRight size={12} />
-          </button>
+      {/* 3. Operational Attention Required Queue */}
+      <div className="section-panel" style={{ padding: '14px 18px' }}>
+        <div className="section-panel-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className="section-panel-title">Operational Attention Queue</span>
+            <span style={{ fontSize: 11, padding: '2px 6px', backgroundColor: 'var(--status-critical-bg)', color: 'var(--status-critical-dot)', borderRadius: 'var(--radius-xs)', fontWeight: 600 }}>
+              3 Action Items
+            </span>
+          </div>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>High Operational Priority</span>
         </div>
-        <RevenueChart height={220} />
+
+        <table className="ledger-table" style={{ marginTop: 6 }}>
+          <thead>
+            <tr>
+              <th>Operational Issue</th>
+              <th>Deployment Area</th>
+              <th>Business Impact</th>
+              <th>Owner</th>
+              <th>Severity</th>
+              <th style={{ textAlign: 'right' }}>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style={{ fontWeight: 600 }}>Mumbai Field Technician Deficit</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>71 active vs 84 required (13 technician gap)</div>
+              </td>
+              <td>Field Operations (Mumbai)</td>
+              <td>
+                <span style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>18 Orders (4 Critical SLA)</span>
+              </td>
+              <td>Operations Lead</td>
+              <td>
+                <span className="status-indicator">
+                  <span className="status-dot critical" />
+                  <span style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>Critical</span>
+                </span>
+              </td>
+              <td style={{ textAlign: 'right' }}>
+                <div style={{ display: 'inline-flex', gap: 8 }}>
+                  <button className="action-link-btn" onClick={openSlaInvestigation}>
+                    <span>Investigate</span>
+                    <ArrowRight size={11} />
+                  </button>
+                  <button className="action-link-btn" onClick={openDecisionSupport}>
+                    <span>Simulate</span>
+                    <ArrowRight size={11} />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style={{ fontWeight: 600 }}>Acme Industries SLA Window Risk</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>3 critical work orders approaching penalty deadline</div>
+              </td>
+              <td>Service Operations (Pune)</td>
+              <td>
+                <span style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>₹12.4L Contract Exposure</span>
+              </td>
+              <td>Service Desk</td>
+              <td>
+                <span className="status-indicator">
+                  <span className="status-dot attention" />
+                  <span style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>At Risk</span>
+                </span>
+              </td>
+              <td style={{ textAlign: 'right' }}>
+                <button className="action-link-btn" onClick={() => openCustomer('cust-1')}>
+                  <span>View Account</span>
+                  <ArrowRight size={11} />
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style={{ fontWeight: 600 }}>Horizon Commercial Towers Renewal</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Master Service Agreement expires in 22 days</div>
+              </td>
+              <td>Enterprise Accounts</td>
+              <td>₹18.4L Annual Contract Value</td>
+              <td>Commercial Team</td>
+              <td>
+                <span className="status-indicator">
+                  <span className="status-dot info" />
+                  <span>Upcoming</span>
+                </span>
+              </td>
+              <td style={{ textAlign: 'right' }}>
+                <button className="action-link-btn" onClick={() => onNavigateTab('contracts')}>
+                  <span>Review MSA</span>
+                  <ArrowRight size={11} />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      {/* 5. Progressive Sections: Operations & Customer Health */}
+      {/* 4. Business Performance & Customer Portfolio Health */}
       <div className="two-col-grid">
-        {/* Operations Brief */}
+        {/* Business Performance (Revenue Trajectory Chart) */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">Service Operations</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('operations')}>
-              <span>View Operations</span>
+            <span className="section-panel-title">Business Performance &amp; Revenue Trajectory</span>
+            <button className="action-link-btn" onClick={openFinancialInvestigation}>
+              <span>Financial Detail</span>
               <ArrowRight size={12} />
             </button>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, padding: '4px 0' }}>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Open Orders</div>
-              <div style={{ fontSize: 18, fontWeight: 700 }}>{ops.openOrders}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Completed</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--status-healthy-dot)' }}>{ops.completed}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>At SLA Risk</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--status-critical-dot)' }}>{sla.atRiskCount}</div>
-            </div>
-          </div>
-
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 10 }}>
-            Average MTTR is <strong>2.8 hrs</strong> with <strong>88.4%</strong> first-time fix rate across 186 active work orders.
-          </div>
+          <RevenueChart height={220} />
         </div>
 
-        {/* Customer Health Brief */}
+        {/* Customer Health Portfolio */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">Customer Health</span>
+            <span className="section-panel-title">Customer Health Portfolio</span>
             <button className="action-link-btn" onClick={() => onNavigateTab('customers')}>
-              <span>View Accounts</span>
+              <span>View All Accounts</span>
               <ArrowRight size={12} />
             </button>
           </div>
@@ -217,7 +272,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
                   onClick={() => openCustomer(account.id)}
                 >
                   <td style={{ fontWeight: 600 }}>{account.name}</td>
-                  <td style={{ color: account.sla < 92 ? 'var(--status-critical-dot)' : 'var(--text-primary)' }}>
+                  <td style={{ color: account.sla < 92 ? 'var(--status-critical-dot)' : 'var(--text-primary)', fontWeight: 600 }}>
                     {account.sla}%
                   </td>
                   <td>{account.exposure}</td>
@@ -231,17 +286,20 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
               ))}
             </tbody>
           </table>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 4 }}>
+            86 active accounts · 94.2% portfolio average SLA delivery
+          </div>
         </div>
       </div>
 
-      {/* 6. Progressive Sections: Workforce Capacity & Financial Position */}
+      {/* 5. Regional Hub Capacity & Financial Position */}
       <div className="two-col-grid">
         {/* Workforce Regional Hub Deficits */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">Workforce Capacity by Hub</span>
+            <span className="section-panel-title">Workforce Capacity by Regional Hub</span>
             <button className="action-link-btn" onClick={openWorkforceInvestigation}>
-              <span>Investigate</span>
+              <span>Capacity Detail</span>
               <ArrowRight size={12} />
             </button>
           </div>
@@ -253,6 +311,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
                 <th>Required</th>
                 <th>Available</th>
                 <th>Deficit</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -261,18 +320,48 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
                 <td>84</td>
                 <td>71</td>
                 <td style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>-13</td>
+                <td>
+                  <span className="status-indicator">
+                    <span className="status-dot critical" />
+                    <span>Deficit</span>
+                  </span>
+                </td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 600 }}>Pune Operations</td>
                 <td>52</td>
                 <td>49</td>
                 <td style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>-3</td>
+                <td>
+                  <span className="status-indicator">
+                    <span className="status-dot attention" />
+                    <span>Balanced</span>
+                  </span>
+                </td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 600 }}>Bengaluru Tech Support</td>
                 <td>61</td>
                 <td>59</td>
                 <td style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>-2</td>
+                <td>
+                  <span className="status-indicator">
+                    <span className="status-dot attention" />
+                    <span>Balanced</span>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>Hyderabad Regional Facility</td>
+                <td>45</td>
+                <td>45</td>
+                <td style={{ color: 'var(--status-healthy-dot)', fontWeight: 600 }}>0</td>
+                <td>
+                  <span className="status-indicator">
+                    <span className="status-dot healthy" />
+                    <span>Optimal</span>
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -281,7 +370,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
         {/* Financial Position Brief */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">Financial Position</span>
+            <span className="section-panel-title">Financial Position &amp; Cost Structure</span>
             <button className="action-link-btn" onClick={() => onNavigateTab('finance')}>
               <span>View Finance</span>
               <ArrowRight size={12} />
@@ -291,9 +380,9 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
           <table className="ledger-table">
             <thead>
               <tr>
-                <th>Metric</th>
-                <th>Value</th>
-                <th>Benchmark</th>
+                <th>Financial Metric</th>
+                <th>Current Value</th>
+                <th>Benchmark / Context</th>
               </tr>
             </thead>
             <tbody>
@@ -308,8 +397,8 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
                 <td style={{ color: 'var(--text-muted)' }}>Includes ₹{fin.overtimeCost}L overtime</td>
               </tr>
               <tr>
-                <td>Gross Margin</td>
-                <td style={{ fontWeight: 600 }}>{fin.marginPct}%</td>
+                <td>Operating Margin</td>
+                <td style={{ fontWeight: 600, color: 'var(--status-healthy-dot)' }}>{fin.marginPct}%</td>
                 <td style={{ color: 'var(--text-muted)' }}>Target: {fin.targetMarginPct}%</td>
               </tr>
               <tr>
@@ -322,7 +411,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
         </div>
       </div>
 
-      {/* 7. Quiet Ask Company Query Bar */}
+      {/* 6. Ask Company Query Bar */}
       <div className="ask-company-bar">
         <Search size={14} style={{ color: 'var(--text-muted)' }} />
         <input

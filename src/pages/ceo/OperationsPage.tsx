@@ -96,6 +96,7 @@ export const OperationsPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Operations &gt; Service Operations &amp; SLA Delivery</div>
           <h1 className="greeting-title">Service Operations</h1>
           <p className="greeting-subtitle">
             186 open work orders · 12 currently at SLA risk across 5 regional hubs

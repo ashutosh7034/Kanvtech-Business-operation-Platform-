@@ -31,6 +31,7 @@ export const PayrollOverviewPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Payroll &gt; Executive Disbursement &amp; Statutory Compliance</div>
           <h1 className="greeting-title">Payroll</h1>
           <p className="greeting-subtitle">
             September 2026 disbursement register · 428 employees · Gross run-rate ₹1.82 Cr

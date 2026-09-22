@@ -70,6 +70,7 @@ export const CustomersPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Customers &gt; Enterprise Account Portfolio</div>
           <h1 className="greeting-title">Customers</h1>
           <p className="greeting-subtitle">
             86 active enterprise accounts · 4 require immediate SLA attention

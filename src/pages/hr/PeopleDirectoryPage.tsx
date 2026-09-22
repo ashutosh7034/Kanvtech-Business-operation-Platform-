@@ -75,6 +75,7 @@ export const PeopleDirectoryPage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">People &gt; Employee Directory &amp; Rosters</div>
           <h1 className="greeting-title">People Directory</h1>
           <p className="greeting-subtitle">
             428 employees across 5 regional operational hubs

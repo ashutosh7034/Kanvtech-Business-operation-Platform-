@@ -7,6 +7,7 @@ export const FinancePage: React.FC = () => {
       {/* Header */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">Finance &gt; Revenue &amp; Cost Management</div>
           <h1 className="greeting-title">Finance</h1>
           <p className="greeting-subtitle">
             Month-to-date revenue ₹48.6L · Operating expenses ₹36.5L · Operating margin 24.8%

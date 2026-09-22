@@ -8,6 +8,12 @@ import { AttendanceTrendChart } from '../../components/charts/AttendanceTrendCha
 import {
   UserPlus,
   ArrowRight,
+  ChevronRight,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
 
 interface HrDashboardProps {
@@ -23,10 +29,15 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
   const { pulse, whatMatters, regionalCapacity, recruitmentPipeline, peopleRisks, payroll } = hrData;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       {/* 1. Header & Global Filters */}
       <div className="section-header-wrap">
         <div>
+          <div className="section-breadcrumb">
+            <span>People</span>
+            <ChevronRight size={11} />
+            <span className="current">Human Capital &amp; Operations</span>
+          </div>
           <h1 className="greeting-title">People Overview</h1>
           <div className="greeting-subtitle">
             <span>Monday, 22 September 2026</span>
@@ -41,31 +52,31 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
         <FilterBar />
       </div>
 
-      {/* 2. Workforce at a Glance (6 Primary Metric Blocks) */}
+      {/* 2. Workforce Pulse Strip (6 Cards Aligned) */}
       <div className="hr-brief-strip">
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('people')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">Total Workforce</span>
           <span className="brief-value">{pulse.totalEmployees}</span>
-          <span className="brief-subtext">+{pulse.joinersCount} this month</span>
+          <span className="brief-subtext">+{pulse.joinersCount} this month · 5 Hubs</span>
         </div>
 
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">
             {pulse.isHistorical ? 'Avg On-Duty' : 'Present On-Duty'}
           </span>
           <span className="brief-value" style={{ color: 'var(--status-healthy-dot)' }}>
             {pulse.presentOnDuty}
           </span>
-          <span className="brief-subtext">{pulse.attendanceRate}% attendance</span>
+          <span className="brief-subtext">{pulse.attendanceRate}% attendance rate</span>
         </div>
 
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">Approved Leave</span>
           <span className="brief-value">{pulse.approvedLeave}</span>
-          <span className="brief-subtext">Planned PTO</span>
+          <span className="brief-subtext">4.9% · Planned PTO</span>
         </div>
 
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">Unplanned Absent</span>
           <span className="brief-value" style={{ color: pulse.unplannedAbsent > 5 ? 'var(--status-critical-dot)' : 'inherit' }}>
             {pulse.unplannedAbsent}
@@ -73,7 +84,7 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
           <span className="brief-subtext">3 Mumbai field techs</span>
         </div>
 
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('recruitment')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">Open Positions</span>
           <span className="brief-value" style={{ color: 'var(--brand-primary)' }}>
             {pulse.openPositions}
@@ -81,18 +92,21 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
           <span className="brief-subtext">4 in Field Operations</span>
         </div>
 
-        <div className="hr-brief-cell">
+        <div className="hr-brief-cell" onClick={() => onNavigateTab('performance')} style={{ cursor: 'pointer' }}>
           <span className="brief-label">Monthly Attrition</span>
           <span className="brief-value">{pulse.attritionRate}%</span>
-          <span className="brief-subtext">Target: &lt; 3.0%</span>
+          <span className="brief-subtext">Target: &lt; 3.0% (Healthy)</span>
         </div>
       </div>
 
-      {/* 3. Workforce Pressure (Editorial Notice) */}
+      {/* 3. Operational Staffing Alert (Editorial Notice) */}
       <div className="editorial-notice-panel">
         <div className="editorial-notice-header">
-          <span className="editorial-notice-tag">Staffing Alert</span>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Field Capacity Pressure</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span className="editorial-notice-tag">Staffing Alert</span>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>· High Operational Impact</span>
+          </div>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Field Capacity Pressure</span>
         </div>
 
         <div className="editorial-headline">
@@ -112,7 +126,7 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
           </div>
           <div className="editorial-metric-item">
             <span className="editorial-metric-label">Operational Impact</span>
-            <span className="editorial-metric-val">{whatMatters.ordersAffected} Orders Affected</span>
+            <span className="editorial-metric-val">18 Orders Affected (4 Critical)</span>
           </div>
           <div className="editorial-metric-item">
             <span className="editorial-metric-label">Overtime Burden</span>
@@ -121,7 +135,7 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
         </div>
 
         <div className="editorial-notice-footer">
-          <span>Action required: Authorize 5 Field Technician requisitions or initiate inter-hub reassignments.</span>
+          <span>Action recommended: Authorize 5 Field Technician requisitions or initiate inter-hub reassignments.</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button
               className="action-link-btn"
@@ -141,90 +155,25 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
               <span>Create Requisition</span>
             </button>
             <button className="action-link-btn" onClick={() => onNavigateTab('workforce_planning')}>
-              <span>View Capacity</span>
+              <span>Simulate Capacity</span>
               <ArrowRight size={13} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* 4. Attendance Trend Chart */}
-      <div className="section-panel">
-        <div className="section-panel-header">
-          <span className="section-panel-title">7-Day Daily Attendance & Workforce Deployment</span>
-          <button className="action-link-btn" onClick={() => onNavigateTab('attendance')}>
-            <span>View Full Roster</span>
-            <ArrowRight size={12} />
-          </button>
-        </div>
-        <AttendanceTrendChart height={220} />
-      </div>
-
-      {/* 5. Secondary Operational Metrics */}
-      <div className="hr-secondary-strip">
-        <div className="hr-secondary-cell">
-          <span className="brief-label">Recruitment</span>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>14 Open</span>
-          <span className="brief-subtext">182 applicants · 9 offers</span>
-        </div>
-        <div className="hr-secondary-cell">
-          <span className="brief-label">Overtime</span>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>312 Hours</span>
-          <span className="brief-subtext">₹14.6L accrued cost</span>
-        </div>
-        <div className="hr-secondary-cell">
-          <span className="brief-label">Retention</span>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>1.8% Attrition</span>
-          <span className="brief-subtext">7 joiners · 2 exits</span>
-        </div>
-        <div className="hr-secondary-cell">
-          <span className="brief-label">Compliance</span>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>9 Expiring</span>
-          <span className="brief-subtext">86% training completion</span>
-        </div>
-      </div>
-
-      {/* 6. Regional Hub Capacity & Recruitment Funnel */}
+      {/* 4. 7-Day Attendance Trend & Recruitment Funnel */}
       <div className="two-col-grid">
-        {/* Regional Hub Matrix */}
+        {/* Attendance Trend Chart */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">Regional Hub Capacity Matrix</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('workforce_planning')}>
-              <span>Capacity Simulator</span>
+            <span className="section-panel-title">7-Day Daily Attendance &amp; Workforce Deployment</span>
+            <button className="action-link-btn" onClick={() => onNavigateTab('attendance')}>
+              <span>Full Roster</span>
               <ArrowRight size={12} />
             </button>
           </div>
-
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Regional Hub</th>
-                <th>Required</th>
-                <th>Available</th>
-                <th>Deficit</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {regionalCapacity.map((hub) => (
-                <tr key={hub.region}>
-                  <td style={{ fontWeight: 600 }}>{hub.region}</td>
-                  <td>{hub.required}</td>
-                  <td>{hub.available}</td>
-                  <td style={{ fontWeight: 600, color: hub.gap < 0 ? 'var(--status-critical-dot)' : 'var(--status-healthy-dot)' }}>
-                    {hub.gap > 0 ? '+' : ''}{hub.gap}
-                  </td>
-                  <td>
-                    <span className="status-indicator">
-                      <span className={`status-dot ${hub.status === 'Deficit' ? 'critical' : hub.status === 'Healthy' ? 'healthy' : 'attention'}`} />
-                      <span>{hub.status}</span>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <AttendanceTrendChart height={220} />
         </div>
 
         {/* Recruitment Pipeline Funnel */}
@@ -270,12 +219,86 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
         </div>
       </div>
 
-      {/* 7. People Risks & Payroll Snapshot */}
+      {/* 5. Regional Hub Matrix & Secondary Operational Pulse */}
+      <div className="two-col-grid">
+        {/* Regional Hub Matrix */}
+        <div className="section-panel">
+          <div className="section-panel-header">
+            <span className="section-panel-title">Regional Hub Capacity Matrix</span>
+            <button className="action-link-btn" onClick={() => onNavigateTab('workforce_planning')}>
+              <span>Capacity Simulator</span>
+              <ArrowRight size={12} />
+            </button>
+          </div>
+
+          <table className="ledger-table">
+            <thead>
+              <tr>
+                <th>Regional Hub</th>
+                <th>Required</th>
+                <th>Available</th>
+                <th>Deficit</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {regionalCapacity.map((hub) => (
+                <tr key={hub.region}>
+                  <td style={{ fontWeight: 600 }}>{hub.region}</td>
+                  <td>{hub.required}</td>
+                  <td>{hub.available}</td>
+                  <td style={{ fontWeight: 600, color: hub.gap < 0 ? 'var(--status-critical-dot)' : 'var(--status-healthy-dot)' }}>
+                    {hub.gap > 0 ? '+' : ''}{hub.gap}
+                  </td>
+                  <td>
+                    <span className="status-indicator">
+                      <span className={`status-dot ${hub.status === 'Deficit' ? 'critical' : hub.status === 'Healthy' ? 'healthy' : 'attention'}`} />
+                      <span>{hub.status}</span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Secondary Operational Metrics */}
+        <div className="section-panel">
+          <div className="section-panel-header">
+            <span className="section-panel-title">Operations &amp; Compliance Pulse</span>
+          </div>
+
+          <div className="hr-secondary-strip" style={{ border: 'none', padding: 0 }}>
+            <div className="hr-secondary-cell" onClick={() => onNavigateTab('recruitment')} style={{ cursor: 'pointer' }}>
+              <span className="brief-label">Recruitment</span>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>14 Open</span>
+              <span className="brief-subtext">182 applicants · 9 offers</span>
+            </div>
+            <div className="hr-secondary-cell" onClick={() => onNavigateTab('workforce_planning')} style={{ cursor: 'pointer' }}>
+              <span className="brief-label">Overtime</span>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>312 Hours</span>
+              <span className="brief-subtext">₹14.6L accrued cost</span>
+            </div>
+            <div className="hr-secondary-cell" onClick={() => onNavigateTab('people')} style={{ cursor: 'pointer' }}>
+              <span className="brief-label">Retention</span>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>1.8% Attrition</span>
+              <span className="brief-subtext">7 joiners · 2 exits</span>
+            </div>
+            <div className="hr-secondary-cell" onClick={() => onNavigateTab('skills_certs')} style={{ cursor: 'pointer' }}>
+              <span className="brief-label">Compliance</span>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>9 Expiring</span>
+              <span className="brief-subtext">86% training completion</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. People Risks & Payroll Snapshot */}
       <div className="two-col-grid">
         {/* People Risks Watchlist */}
         <div className="section-panel">
           <div className="section-panel-header">
-            <span className="section-panel-title">People & Compliance Risks</span>
+            <span className="section-panel-title">People &amp; Compliance Risks</span>
             <button className="action-link-btn" onClick={() => onNavigateTab('skills_certs')}>
               <span>View Certifications</span>
               <ArrowRight size={12} />
