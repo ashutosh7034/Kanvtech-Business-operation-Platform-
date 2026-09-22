@@ -180,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div className="sidebar-content">
           {sections.map((sec, idx) => (
             <div key={idx}>
               <div className="sidebar-group-label">{sec.label}</div>

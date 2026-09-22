@@ -176,10 +176,9 @@ a:hover {
 
 .content-area {
   flex: 1;
-  padding: 20px 28px 48px 28px;
-  max-width: 1600px;
+  padding: 20px 24px 48px 24px;
   width: 100%;
-  margin: 0 auto;
+  min-width: 0;
 }
 
 /* ==========================================================
@@ -370,20 +369,27 @@ a:hover {
    ========================================================== */
 .sidebar-container {
   width: var(--sidebar-width);
+  height: 100dvh;
+  max-height: 100dvh;
+  position: sticky;
+  top: 0;
   background-color: var(--bg-surface);
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  min-height: 100vh;
-  transition: margin-left 200ms ease, opacity 200ms ease;
+  overflow: hidden;
+  z-index: 25;
+  transition: width 200ms ease, opacity 200ms ease, border-color 200ms ease;
 }
 
 @media (min-width: 1024px) {
   .sidebar-container.collapsed {
-    margin-left: calc(-1 * var(--sidebar-width));
+    width: 0;
+    border-right-color: transparent;
     opacity: 0;
     pointer-events: none;
+    overflow: hidden;
   }
 }
 
@@ -393,6 +399,14 @@ a:hover {
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.sidebar-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-company-title {
@@ -473,11 +487,13 @@ a:hover {
 
 .sidebar-footer {
   margin-top: auto;
+  flex-shrink: 0;
   padding: 12px 16px;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background-color: var(--bg-surface);
 }
 
 /* ==========================================================
@@ -1374,7 +1390,8 @@ a:hover {
     bottom: 0;
     width: 280px;
     max-width: 85vw;
-    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
     z-index: 50;
     margin-left: 0 !important;
     opacity: 1 !important;
@@ -1383,6 +1400,10 @@ a:hover {
     transition: transform 200ms ease;
     box-shadow: var(--shadow-modal);
     background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle) !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .sidebar-container.open {
