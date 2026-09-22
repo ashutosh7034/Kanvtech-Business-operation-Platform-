@@ -2,429 +2,410 @@ import React from 'react';
 import { useFilters } from '../../context/FilterContext';
 import { useModalDrawer } from '../../context/ModalDrawerContext';
 import { DataService } from '../../data/dataService';
-import { COMPANY_INFO } from '../../data/mockData';
 import { FilterBar } from '../../components/common/FilterBar';
 import { RevenueChart } from '../../components/charts/RevenueChart';
+import { SlaPerformanceTrendChart } from '../../components/charts/SlaPerformanceTrendChart';
+import { DonutMetricChart } from '../../components/charts/DonutMetricChart';
+import { CapacityDemandChart } from '../../components/charts/CapacityDemandChart';
 import {
+  DollarSign,
   TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  Search,
-  ChevronRight,
-  AlertTriangle,
-  Clock,
+  ShieldCheck,
+  Users,
+  Building2,
+  FileText,
   CheckCircle2,
+  ArrowUpRight,
+  ArrowDownRight,
+  Lightbulb,
 } from 'lucide-react';
 
 interface CeoDashboardProps {
-  onNavigateTab: (tabId: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => {
   const { period, location, department } = useFilters();
-  const {
-    openCustomer,
-    openSlaInvestigation,
-    openWorkforceInvestigation,
-    openDecisionSupport,
-    openFinancialInvestigation,
-  } = useModalDrawer();
+  const { openCustomer, openWorkOrder, openContract } = useModalDrawer();
 
-  // Canonical CEO metrics derived from FilterContext
-  const ceoData = DataService.getCeoMetrics({ period, location, department });
-  const { rev, fin, sla, workforce, ops, cust } = ceoData;
+  const metrics = DataService.getCeoMetrics({ period, location, department });
+  const customers = DataService.getCustomers(location);
 
-  const exposedAccounts = [
-    { id: 'cust-1', name: cust.topExposure.name, sla: cust.topExposure.sla, exposure: cust.topExposure.contractValue },
-    { id: 'cust-2', name: 'Meridian Healthcare', sla: 89, exposure: '₹15.2L' },
-    { id: 'cust-3', name: 'Vertex Commercial Towers', sla: 93, exposure: '₹6.9L' },
-  ];
+  const topCustomers = customers.slice(0, 5);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      {/* 1. Header & Context */}
-      <div className="section-header-wrap">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Top Page Header with Context Quote */}
+      <div className="ref-page-header">
         <div>
-          <div className="section-breadcrumb">
-            <span>Overview</span>
-            <ChevronRight size={11} />
-            <span className="current">Business Performance</span>
-          </div>
-          <h1 className="greeting-title">CEO Overview</h1>
-          <div className="greeting-subtitle">
-            <span>Monday, 22 September 2026</span>
-            <span className="dot-separator">·</span>
-            <span>{COMPANY_INFO.name}</span>
-            <span className="dot-separator">·</span>
-            <span>{location}</span>
-            <span className="dot-separator">·</span>
-            <span>{department}</span>
-          </div>
+          <h1 className="ref-page-title">CEO Business Dashboard</h1>
+          <p className="ref-page-subtitle">
+            Business performance, operations, workforce and customer overview
+          </p>
         </div>
-        <FilterBar />
-      </div>
-
-      {/* 2. Executive Metric Strip (6 Cards Aligned) */}
-      <div className="executive-brief-strip six-col">
-        {/* Revenue */}
-        <div className="executive-brief-cell" onClick={openFinancialInvestigation} title="Click to view financial position">
-          <span className="brief-label">{rev.label}</span>
-          <span className="brief-value">₹{rev.current}L</span>
-          <div className={`brief-trend ${rev.growth >= 0 ? 'positive' : 'negative'}`}>
-            {rev.growth >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            <span>+{rev.growth}% YoY</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <FilterBar showDepartment={true} />
+          <div className="ref-quote-box">
+            <span className="ref-quote-text">"Operational clarity. Better decisions."</span>
+            <div className="ref-quote-line" />
           </div>
-          <span className="brief-subtext">Target: ₹{rev.target}L</span>
-        </div>
-
-        {/* Operating Margin */}
-        <div className="executive-brief-cell" onClick={openFinancialInvestigation} title="Click to view margin analysis">
-          <span className="brief-label">Gross Margin</span>
-          <span className="brief-value">{fin.marginPct}%</span>
-          <div className={`brief-trend ${fin.variancePp >= 0 ? 'positive' : 'negative'}`}>
-            {fin.variancePp >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            <span>{fin.variancePp}pp vs target</span>
-          </div>
-          <span className="brief-subtext">Overtime: ₹{fin.overtimeCost}L</span>
-        </div>
-
-        {/* SLA Compliance */}
-        <div className="executive-brief-cell" onClick={openSlaInvestigation} title="Click to investigate SLA delivery">
-          <span className="brief-label">SLA Compliance</span>
-          <span className="brief-value">{sla.compliance}%</span>
-          <div className={`brief-trend ${sla.variancePp >= 0 ? 'positive' : 'negative'}`}>
-            {sla.variancePp >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            <span>{sla.variancePp}pp vs target ({sla.target}%)</span>
-          </div>
-          <span className="brief-subtext">{sla.atRiskCount} at risk · {sla.criticalCount} critical</span>
-        </div>
-
-        {/* Workforce */}
-        <div className="executive-brief-cell" onClick={openWorkforceInvestigation} title="Click to view capacity">
-          <span className="brief-label">{workforce.availableLabel}</span>
-          <span className="brief-value">{workforce.available} / {workforce.totalHeadcount}</span>
-          <div className={`brief-trend ${workforce.gap >= 0 ? 'positive' : 'negative'}`}>
-            <span>{workforce.gap < 0 ? `${workforce.gap} gap` : 'Full capacity'}</span>
-          </div>
-          <span className="brief-subtext">Mumbai: -13 field gap</span>
-        </div>
-
-        {/* Customers */}
-        <div className="executive-brief-cell" onClick={() => onNavigateTab('customers')} title="Click to view customer accounts">
-          <span className="brief-label">Customer Portfolio</span>
-          <span className="brief-value">86</span>
-          <div className="brief-trend" style={{ color: 'var(--status-critical-dot)' }}>
-            <span>4 requiring attention</span>
-          </div>
-          <span className="brief-subtext">₹48.6L monthly run-rate</span>
-        </div>
-
-        {/* Contracts */}
-        <div className="executive-brief-cell" onClick={() => onNavigateTab('contracts')} title="Click to view contracts">
-          <span className="brief-label">Active Contracts</span>
-          <span className="brief-value">112</span>
-          <div className="brief-trend" style={{ color: 'var(--status-attention-dot)' }}>
-            <span>7 renewing &lt; 30d</span>
-          </div>
-          <span className="brief-subtext">₹18.7 Cr Total ACV</span>
         </div>
       </div>
 
-      {/* 3. Operational Attention Required Queue */}
-      <div className="section-panel" style={{ padding: '14px 18px' }}>
-        <div className="section-panel-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span className="section-panel-title">Operational Attention Queue</span>
-            <span style={{ fontSize: 11, padding: '2px 6px', backgroundColor: 'var(--status-critical-bg)', color: 'var(--status-critical-dot)', borderRadius: 'var(--radius-xs)', fontWeight: 600 }}>
-              3 Action Items
+      {/* 6 Soft Tinted KPI Cards Row */}
+      <div className="ref-kpi-row">
+        {/* Card 1: Revenue */}
+        <div className="ref-kpi-card tint-blue">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#2563EB' }}>
+              <DollarSign size={16} />
+            </div>
+            <span className="ref-kpi-label">Revenue</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.rev.label}</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +6.2%</span>
+            <span className="ref-kpi-context">vs previous period</span>
+          </div>
+        </div>
+
+        {/* Card 2: Gross Margin */}
+        <div className="ref-kpi-card tint-green">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
+              <TrendingUp size={16} />
+            </div>
+            <span className="ref-kpi-label">Gross Margin</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.fin.marginPct}%</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +1.8 pts</span>
+            <span className="ref-kpi-context">vs target (26.0%)</span>
+          </div>
+        </div>
+
+        {/* Card 3: SLA Compliance */}
+        <div className="ref-kpi-card tint-teal">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(15, 118, 110, 0.15)', color: '#0F766E' }}>
+              <ShieldCheck size={16} />
+            </div>
+            <span className="ref-kpi-label">SLA Compliance</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.sla.compliance}%</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend down"><ArrowDownRight size={13} /> -1.8 pts</span>
+            <span className="ref-kpi-context">186 live orders</span>
+          </div>
+        </div>
+
+        {/* Card 4: Current On-Duty */}
+        <div className="ref-kpi-card tint-purple">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(147, 51, 234, 0.15)', color: '#9333EA' }}>
+              <Users size={16} />
+            </div>
+            <span className="ref-kpi-label">Current On-Duty</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.workforce.available}</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> 92.8%</span>
+            <span className="ref-kpi-context">of 428 workforce</span>
+          </div>
+        </div>
+
+        {/* Card 5: Customer Portfolio */}
+        <div className="ref-kpi-card tint-amber">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#D97706' }}>
+              <Building2 size={16} />
+            </div>
+            <span className="ref-kpi-label">Customer Portfolio</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.cust.totalAccounts}</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend down" style={{ color: '#D97706' }}>4 accounts</span>
+            <span className="ref-kpi-context">require attention</span>
+          </div>
+        </div>
+
+        {/* Card 6: Active Contracts */}
+        <div className="ref-kpi-card tint-orange">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#EA580C' }}>
+              <FileText size={16} />
+            </div>
+            <span className="ref-kpi-label">Active Contracts</span>
+          </div>
+          <div className="ref-kpi-val">{metrics.contracts.activeCount}</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend down" style={{ color: '#EA580C' }}>7 MSAs</span>
+            <span className="ref-kpi-context">renewing &lt; 30d</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 1: Revenue Trend | SLA Performance Trend | Operational Status */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Revenue Trend */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Revenue Trajectory vs Target</span>
+            <span className="ref-panel-meta">YTD FY 2026-27</span>
+          </div>
+          <RevenueChart height={160} />
+        </div>
+
+        {/* Panel 2: SLA Performance Trend */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">SLA Performance Trend</span>
+            <span className="ref-panel-meta">Target: 96.0%</span>
+          </div>
+          <SlaPerformanceTrendChart height={160} />
+        </div>
+
+        {/* Panel 3: Operational Status */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Operational Work Order Status</span>
+            <span className="ref-panel-meta">186 Total</span>
+          </div>
+          <DonutMetricChart
+            centerValue="186"
+            centerLabel="Work Orders"
+            labels={['In Progress', 'Dispatched', 'Pending', 'SLA Risk']}
+            data={[92, 56, 26, 12]}
+            colors={['#0F766E', '#3B82F6', '#F59E0B', '#EF4444']}
+            height={160}
+          />
+        </div>
+      </div>
+
+      {/* ROW 2: Workforce Capacity by Location | Work Orders by Priority | Customer Health */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Workforce Capacity by Location */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Workforce Capacity by Hub</span>
+            <span className="ref-panel-meta">Avail vs Req</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { hub: 'Mumbai Central Hub', avail: 71, req: 84, color: '#EF4444', pct: 84.5 },
+              { hub: 'Pune Tech Hub', avail: 48, req: 50, color: '#3B82F6', pct: 96.0 },
+              { hub: 'Bengaluru Support Hub', avail: 38, req: 36, color: '#10B981', pct: 100 },
+              { hub: 'Delhi NCR Facility', avail: 35, req: 38, color: '#F59E0B', pct: 92.1 },
+              { hub: 'Hyderabad Engineering', avail: 25, req: 25, color: '#10B981', pct: 100 },
+            ].map((loc) => (
+              <div key={loc.hub} className="ref-hbar-row">
+                <span className="ref-hbar-label">{loc.hub}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${loc.pct}%`, backgroundColor: loc.color }} />
+                </div>
+                <span className="ref-hbar-val">{loc.avail}/{loc.req}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel 2: Work Orders by Priority */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Work Orders by Priority</span>
+            <span className="ref-panel-meta">Active Queue</span>
+          </div>
+          <DonutMetricChart
+            centerValue="186"
+            centerLabel="Total Queue"
+            labels={['P1 Critical', 'P2 High', 'P3 Medium', 'P4 Standard']}
+            data={[12, 38, 86, 50]}
+            colors={['#EF4444', '#F59E0B', '#3B82F6', '#94A3B8']}
+            height={160}
+          />
+        </div>
+
+        {/* Panel 3: Customer Health Portfolio */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Customer Health Portfolio</span>
+            <span className="ref-panel-meta">86 Accounts</span>
+          </div>
+          <DonutMetricChart
+            centerValue="86"
+            centerLabel="Accounts"
+            labels={['Healthy (95%+)', 'Attention (90-95%)', 'Critical Risk (<90%)']}
+            data={[72, 10, 4]}
+            colors={['#10B981', '#F59E0B', '#EF4444']}
+            height={160}
+          />
+        </div>
+      </div>
+
+      {/* ROW 3: Department Performance | Top Customers Table | Contract Portfolio */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Department Performance */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Department SLA Delivery (%)</span>
+            <span className="ref-panel-meta">Q3 Target 95%</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { dept: 'Field Operations', sla: 92.8, color: '#F59E0B' },
+              { dept: 'Engineering & Automation', sla: 96.4, color: '#10B981' },
+              { dept: 'Customer Support', sla: 95.8, color: '#10B981' },
+              { dept: 'Sales & Enterprise Accounts', sla: 94.2, color: '#3B82F6' },
+              { dept: 'Administration & Logistics', sla: 96.0, color: '#10B981' },
+            ].map((d) => (
+              <div key={d.dept} className="ref-hbar-row">
+                <span className="ref-hbar-label">{d.dept}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${d.sla}%`, backgroundColor: d.color }} />
+                </div>
+                <span className="ref-hbar-val">{d.sla}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel 2: Top Customers Table */}
+        <div className="ref-panel" style={{ padding: '12px 14px' }}>
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Top Enterprise Accounts</span>
+            <span
+              style={{ fontSize: 11, color: '#2563EB', cursor: 'pointer', fontWeight: 600 }}
+              onClick={() => onNavigateTab && onNavigateTab('customers')}
+            >
+              View All &rarr;
             </span>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>High Operational Priority</span>
-        </div>
-
-        <table className="ledger-table" style={{ marginTop: 6 }}>
-          <thead>
-            <tr>
-              <th>Operational Issue</th>
-              <th>Deployment Area</th>
-              <th>Business Impact</th>
-              <th>Owner</th>
-              <th>Severity</th>
-              <th style={{ textAlign: 'right' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div style={{ fontWeight: 600 }}>Mumbai Field Technician Deficit</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>71 active vs 84 required (13 technician gap)</div>
-              </td>
-              <td>Field Operations (Mumbai)</td>
-              <td>
-                <span style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>18 Orders (4 Critical SLA)</span>
-              </td>
-              <td>Operations Lead</td>
-              <td>
-                <span className="status-indicator">
-                  <span className="status-dot critical" />
-                  <span style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>Critical</span>
-                </span>
-              </td>
-              <td style={{ textAlign: 'right' }}>
-                <div style={{ display: 'inline-flex', gap: 8 }}>
-                  <button className="action-link-btn" onClick={openSlaInvestigation}>
-                    <span>Investigate</span>
-                    <ArrowRight size={11} />
-                  </button>
-                  <button className="action-link-btn" onClick={openDecisionSupport}>
-                    <span>Simulate</span>
-                    <ArrowRight size={11} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style={{ fontWeight: 600 }}>Acme Industries SLA Window Risk</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>3 critical work orders approaching penalty deadline</div>
-              </td>
-              <td>Service Operations (Pune)</td>
-              <td>
-                <span style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>₹12.4L Contract Exposure</span>
-              </td>
-              <td>Service Desk</td>
-              <td>
-                <span className="status-indicator">
-                  <span className="status-dot attention" />
-                  <span style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>At Risk</span>
-                </span>
-              </td>
-              <td style={{ textAlign: 'right' }}>
-                <button className="action-link-btn" onClick={() => openCustomer('cust-1')}>
-                  <span>View Account</span>
-                  <ArrowRight size={11} />
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style={{ fontWeight: 600 }}>Horizon Commercial Towers Renewal</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Master Service Agreement expires in 22 days</div>
-              </td>
-              <td>Enterprise Accounts</td>
-              <td>₹18.4L Annual Contract Value</td>
-              <td>Commercial Team</td>
-              <td>
-                <span className="status-indicator">
-                  <span className="status-dot info" />
-                  <span>Upcoming</span>
-                </span>
-              </td>
-              <td style={{ textAlign: 'right' }}>
-                <button className="action-link-btn" onClick={() => onNavigateTab('contracts')}>
-                  <span>Review MSA</span>
-                  <ArrowRight size={11} />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* 4. Business Performance & Customer Portfolio Health */}
-      <div className="two-col-grid">
-        {/* Business Performance (Revenue Trajectory Chart) */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Business Performance &amp; Revenue Trajectory</span>
-            <button className="action-link-btn" onClick={openFinancialInvestigation}>
-              <span>Financial Detail</span>
-              <ArrowRight size={12} />
-            </button>
-          </div>
-          <RevenueChart height={220} />
-        </div>
-
-        {/* Customer Health Portfolio */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Customer Health Portfolio</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('customers')}>
-              <span>View All Accounts</span>
-              <ArrowRight size={12} />
-            </button>
-          </div>
-
-          <table className="ledger-table">
+          <table className="ref-table">
             <thead>
               <tr>
-                <th>Account</th>
+                <th style={{ width: 24 }}>#</th>
+                <th>Customer</th>
+                <th>Monthly</th>
                 <th>SLA</th>
-                <th>Risk Exposure</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {exposedAccounts.map((account) => (
+              {topCustomers.map((c, idx) => (
                 <tr
-                  key={account.id}
+                  key={c.id}
+                  onClick={() => openCustomer(c.id)}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => openCustomer(account.id)}
                 >
-                  <td style={{ fontWeight: 600 }}>{account.name}</td>
-                  <td style={{ color: account.sla < 92 ? 'var(--status-critical-dot)' : 'var(--text-primary)', fontWeight: 600 }}>
-                    {account.sla}%
+                  <td className="ref-table-rank">{idx + 1}</td>
+                  <td style={{ fontWeight: 600, color: '#0F766E' }}>{c.name}</td>
+                  <td>{c.contractValue}</td>
+                  <td style={{ fontWeight: 600, color: c.slaCompliance < 95 ? '#DC2626' : '#16A34A' }}>
+                    {c.slaCompliance}%
                   </td>
-                  <td>{account.exposure}</td>
                   <td>
-                    <span className="status-indicator">
-                      <span className={`status-dot ${account.sla < 92 ? 'critical' : 'attention'}`} />
-                      <span>{account.sla < 92 ? 'Critical' : 'Attention'}</span>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '1px 6px',
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        backgroundColor: c.health === 'healthy' ? '#DCFCE7' : c.health === 'attention' ? '#FEF3C7' : '#FEE2E2',
+                        color: c.health === 'healthy' ? '#166534' : c.health === 'attention' ? '#9A3412' : '#991B1B',
+                      }}
+                    >
+                      {c.health}
                     </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 4 }}>
-            86 active accounts · 94.2% portfolio average SLA delivery
+        </div>
+
+        {/* Panel 3: Contract Portfolio */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Contract Portfolio Status</span>
+            <span className="ref-panel-meta">112 MSAs</span>
           </div>
+          <DonutMetricChart
+            centerValue="112"
+            centerLabel="Active MSAs"
+            labels={['Active & Stable', 'Expiring < 90 Days', 'Expiring < 30 Days']}
+            data={[86, 19, 7]}
+            colors={['#10B981', '#F59E0B', '#EF4444']}
+            height={160}
+          />
         </div>
       </div>
 
-      {/* 5. Regional Hub Capacity & Financial Position */}
-      <div className="two-col-grid">
-        {/* Workforce Regional Hub Deficits */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Workforce Capacity by Regional Hub</span>
-            <button className="action-link-btn" onClick={openWorkforceInvestigation}>
-              <span>Capacity Detail</span>
-              <ArrowRight size={12} />
-            </button>
+      {/* ROW 4: Workforce Capacity Demand | Cost Structure Breakdown | Key Insights */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Capacity vs Demand Chart */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Capacity vs Demand by Function</span>
+            <span className="ref-panel-meta">Staffing Load</span>
           </div>
-
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Regional Hub</th>
-                <th>Required</th>
-                <th>Available</th>
-                <th>Deficit</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ fontWeight: 600 }}>Mumbai Field Operations</td>
-                <td>84</td>
-                <td>71</td>
-                <td style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>-13</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot critical" />
-                    <span>Deficit</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600 }}>Pune Operations</td>
-                <td>52</td>
-                <td>49</td>
-                <td style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>-3</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot attention" />
-                    <span>Balanced</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600 }}>Bengaluru Tech Support</td>
-                <td>61</td>
-                <td>59</td>
-                <td style={{ color: 'var(--status-attention-dot)', fontWeight: 600 }}>-2</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot attention" />
-                    <span>Balanced</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600 }}>Hyderabad Regional Facility</td>
-                <td>45</td>
-                <td>45</td>
-                <td style={{ color: 'var(--status-healthy-dot)', fontWeight: 600 }}>0</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot healthy" />
-                    <span>Optimal</span>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <CapacityDemandChart height={160} />
         </div>
 
-        {/* Financial Position Brief */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Financial Position &amp; Cost Structure</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('finance')}>
-              <span>View Finance</span>
-              <ArrowRight size={12} />
-            </button>
+        {/* Panel 2: Cost Structure Breakdown */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Operating Cost Structure</span>
+            <span className="ref-panel-meta">₹36.5L Total</span>
           </div>
-
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Financial Metric</th>
-                <th>Current Value</th>
-                <th>Benchmark / Context</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Gross Revenue</td>
-                <td style={{ fontWeight: 600 }}>₹{rev.current}L</td>
-                <td style={{ color: 'var(--text-muted)' }}>Target: ₹{rev.target}L</td>
-              </tr>
-              <tr>
-                <td>Operating Gross Cost</td>
-                <td style={{ fontWeight: 600 }}>₹{fin.operatingCost}L</td>
-                <td style={{ color: 'var(--text-muted)' }}>Includes ₹{fin.overtimeCost}L overtime</td>
-              </tr>
-              <tr>
-                <td>Operating Margin</td>
-                <td style={{ fontWeight: 600, color: 'var(--status-healthy-dot)' }}>{fin.marginPct}%</td>
-                <td style={{ color: 'var(--text-muted)' }}>Target: {fin.targetMarginPct}%</td>
-              </tr>
-              <tr>
-                <td>Receivables Outstanding</td>
-                <td style={{ fontWeight: 600 }}>₹62.4L</td>
-                <td style={{ color: 'var(--text-muted)' }}>38 Days DSO (Healthy)</td>
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { item: 'Workforce Direct Labor', amount: '₹21.2L', pct: 58.1, color: '#0F766E' },
+              { item: 'HVAC & Electrical Spares', amount: '₹8.8L', pct: 24.1, color: '#3B82F6' },
+              { item: 'Fleet Logistics & Fuel', amount: '₹3.8L', pct: 10.4, color: '#F59E0B' },
+              { item: 'General Administration', amount: '₹2.7L', pct: 7.4, color: '#94A3B8' },
+            ].map((cost) => (
+              <div key={cost.item} className="ref-hbar-row">
+                <span className="ref-hbar-label">{cost.item}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${cost.pct}%`, backgroundColor: cost.color }} />
+                </div>
+                <span className="ref-hbar-val">{cost.amount}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* 6. Ask Company Query Bar */}
-      <div className="ask-company-bar">
-        <Search size={14} style={{ color: 'var(--text-muted)' }} />
-        <input
-          type="text"
-          className="ask-company-input"
-          placeholder="Ask Company: query operational data, investigate SLA drivers, or forecast capacity..."
-          onClick={() => onNavigateTab('ask_company')}
-          readOnly
-        />
-        <div className="ask-company-chips">
-          <span className="ask-chip" onClick={() => onNavigateTab('ask_company')}>Why is SLA declining in Mumbai?</span>
-          <span className="ask-chip" onClick={() => onNavigateTab('ask_company')}>Where are we understaffed?</span>
-          <span className="ask-chip" onClick={() => onNavigateTab('ask_company')}>Which customers are at risk?</span>
+        {/* Panel 3: Key Insights (Green Checkmark List) */}
+        <div className="ref-insights-panel">
+          <div className="ref-insights-header">
+            <Lightbulb size={16} style={{ color: '#F59E0B' }} />
+            <span>Key Insights</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Revenue increased by 6.2% compared with previous operating period.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Mumbai field operations has a 13-technician capacity gap affecting 18 work orders.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>SLA compliance is currently at 94.2% against target of 96.0%.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>12 work orders are approaching critical SLA breach windows across 5 sites.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>7 Master Service Agreements (₹2.3 Cr ACV) are renewing within 30 days.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>4 customer accounts require immediate executive SLA attention.</span>
+          </div>
         </div>
       </div>
     </div>

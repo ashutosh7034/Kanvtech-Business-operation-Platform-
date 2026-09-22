@@ -1,257 +1,336 @@
 import React from 'react';
 import { useFilters } from '../../context/FilterContext';
-import { useModalDrawer } from '../../context/ModalDrawerContext';
-import { DataService } from '../../data/dataService';
 import { FilterBar } from '../../components/common/FilterBar';
 import { HeadcountTrendChart } from '../../components/charts/HeadcountTrendChart';
-import { DataTable, Column } from '../../components/common/DataTable';
-import { StatusBadge } from '../../components/common/StatusBadge';
-import { Employee } from '../../types';
-import { Users, TrendingUp, CheckCircle2, AlertCircle } from 'lucide-react';
+import { DonutMetricChart } from '../../components/charts/DonutMetricChart';
+import {
+  Users,
+  UserPlus,
+  UserMinus,
+  UserCheck,
+  Calendar,
+  HeartHandshake,
+  CheckCircle2,
+  ArrowUpRight,
+  ArrowDownRight,
+  Lightbulb,
+} from 'lucide-react';
 
 export const PeopleDirectoryPage: React.FC = () => {
   const { location, department } = useFilters();
-  const { openEmployee } = useModalDrawer();
-  const employees = DataService.getEmployees(location, department);
-
-  const columns: Column<Employee>[] = [
-    {
-      key: 'name',
-      header: 'Employee Name & ID',
-      sortable: true,
-      render: (emp) => (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span className="font-mono" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{emp.code}</span>
-            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>· {emp.name}</span>
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{emp.role}</div>
-        </div>
-      ),
-    },
-    {
-      key: 'department',
-      header: 'Department',
-      sortable: true,
-    },
-    {
-      key: 'location',
-      header: 'Regional Hub',
-      sortable: true,
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      sortable: true,
-      render: (emp) => <StatusBadge status={emp.status} />,
-    },
-    {
-      key: 'workloadTasks',
-      header: 'Active Tasks',
-      sortable: true,
-      render: (emp) => (
-        <span>
-          {emp.workloadTasks} tasks {emp.slaRiskCount > 0 && <span style={{ color: 'var(--status-critical-dot)', fontWeight: 600 }}>({emp.slaRiskCount} at risk)</span>}
-        </span>
-      ),
-    },
-    {
-      key: 'performanceScore',
-      header: 'Performance Rating',
-      sortable: true,
-      render: (emp) => <span style={{ fontWeight: 600 }}>{emp.performanceScore}%</span>,
-    },
-    {
-      key: 'certifications',
-      header: 'Primary Certification',
-      render: (emp) => (
-        <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-          {emp.certifications[0] || 'Standard Qualified'}
-        </span>
-      ),
-    },
-  ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Header */}
-      <div className="section-header-wrap">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Top Page Header with Context Quote */}
+      <div className="ref-page-header">
         <div>
-          <div className="section-breadcrumb">People &gt; Workforce Structure, Movement &amp; Demographics</div>
-          <h1 className="greeting-title">People &amp; Workforce Analytics</h1>
-          <p className="greeting-subtitle">
-            428 total employees · 397 active on duty · 48 new joiners YTD · 3.4 yrs average tenure across 5 regional operational hubs
+          <h1 className="ref-page-title">Employee Analytics</h1>
+          <p className="ref-page-subtitle">
+            Workforce insights, demographics, movement and organizational structure
           </p>
         </div>
-        <FilterBar />
-      </div>
-
-      {/* 6-Card Metric Strip */}
-      <div className="executive-brief-strip six-col">
-        <div className="brief-cell">
-          <div className="brief-label">TOTAL WORKFORCE</div>
-          <div className="brief-val">428</div>
-          <div className="brief-sub">Across 5 hubs</div>
-        </div>
-        <div className="brief-cell">
-          <div className="brief-label">NEW JOINERS (YTD)</div>
-          <div className="brief-val" style={{ color: 'var(--brand-primary)' }}>48</div>
-          <div className="brief-sub">+12.0% vs last year</div>
-        </div>
-        <div className="brief-cell">
-          <div className="brief-label">EXITS (YTD)</div>
-          <div className="brief-val">16</div>
-          <div className="brief-sub" style={{ color: 'var(--status-healthy-dot)' }}>3.7% turnover rate</div>
-        </div>
-        <div className="brief-cell">
-          <div className="brief-label">ACTIVE PERSONNEL</div>
-          <div className="brief-val" style={{ color: 'var(--status-healthy-dot)' }}>397</div>
-          <div className="brief-sub">92.8% on duty today</div>
-        </div>
-        <div className="brief-cell">
-          <div className="brief-label">AVERAGE TENURE</div>
-          <div className="brief-val">3.4 Yrs</div>
-          <div className="brief-sub">High retention</div>
-        </div>
-        <div className="brief-cell">
-          <div className="brief-label">GENDER DIVERSITY</div>
-          <div className="brief-val">64% : 36%</div>
-          <div className="brief-sub">Male : Female</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <FilterBar />
+          <div className="ref-quote-box">
+            <span className="ref-quote-text">"People are our greatest asset."</span>
+            <div className="ref-quote-line" />
+          </div>
         </div>
       </div>
 
-      {/* Row 1: Headcount Growth & Department Composition */}
-      <div className="two-col-grid">
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Employee Headcount Trend (2026 Progression)</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>385 in Jan &rarr; 428 in Sep (+11.2%)</span>
+      {/* 6 Soft Tinted KPI Cards Row */}
+      <div className="ref-kpi-row">
+        {/* Card 1: Total Employees */}
+        <div className="ref-kpi-card tint-blue">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#2563EB' }}>
+              <Users size={16} />
+            </div>
+            <span className="ref-kpi-label">Total Employees</span>
           </div>
-          <HeadcountTrendChart height={180} />
+          <div className="ref-kpi-val">428</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +8.8%</span>
+            <span className="ref-kpi-context">vs previous quarter</span>
+          </div>
         </div>
 
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Headcount by Department</span>
+        {/* Card 2: New Joiners (YTD) */}
+        <div className="ref-kpi-card tint-green">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
+              <UserPlus size={16} />
+            </div>
+            <span className="ref-kpi-label">New Joiners (YTD)</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 4 }}>
+          <div className="ref-kpi-val">48</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +12.0%</span>
+            <span className="ref-kpi-context">vs last year</span>
+          </div>
+        </div>
+
+        {/* Card 3: Exits (YTD) */}
+        <div className="ref-kpi-card tint-rose">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#DC2626' }}>
+              <UserMinus size={16} />
+            </div>
+            <span className="ref-kpi-label">Exits (YTD)</span>
+          </div>
+          <div className="ref-kpi-val">16</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowDownRight size={13} /> -18.8%</span>
+            <span className="ref-kpi-context">vs last year</span>
+          </div>
+        </div>
+
+        {/* Card 4: Active Employees */}
+        <div className="ref-kpi-card tint-purple">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(147, 51, 234, 0.15)', color: '#9333EA' }}>
+              <UserCheck size={16} />
+            </div>
+            <span className="ref-kpi-label">Active Employees</span>
+          </div>
+          <div className="ref-kpi-val">397</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> 92.8%</span>
+            <span className="ref-kpi-context">of total employees</span>
+          </div>
+        </div>
+
+        {/* Card 5: Average Age */}
+        <div className="ref-kpi-card tint-amber">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#D97706' }}>
+              <Calendar size={16} />
+            </div>
+            <span className="ref-kpi-label">Average Age</span>
+          </div>
+          <div className="ref-kpi-val">32.6</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-context">Years</span>
+          </div>
+        </div>
+
+        {/* Card 6: Gender Ratio */}
+        <div className="ref-kpi-card tint-teal">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(15, 118, 110, 0.15)', color: '#0F766E' }}>
+              <HeartHandshake size={16} />
+            </div>
+            <span className="ref-kpi-label">Gender Ratio</span>
+          </div>
+          <div className="ref-kpi-val" style={{ fontSize: 20, paddingTop: 3 }}>64% : 36%</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-context">Male : Female</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 1: Employee Headcount Trend | Employees by Department | Employees by Location */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Employee Headcount Trend */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employee Headcount Trend</span>
+            <span className="ref-panel-meta">Monthly Growth</span>
+          </div>
+          <HeadcountTrendChart height={160} />
+        </div>
+
+        {/* Panel 2: Employees by Department */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employees by Department</span>
+            <span className="ref-panel-meta">428 Total</span>
+          </div>
+          <DonutMetricChart
+            centerValue="428"
+            centerLabel="Employees"
+            labels={['Operations (43%)', 'Engineering (18%)', 'Sales (13%)', 'Support (11%)', 'HR/Admin (8%)', 'Finance (8%)']}
+            data={[184, 76, 54, 48, 32, 34]}
+            colors={['#3B82F6', '#10B981', '#F59E0B', '#9333EA', '#0F766E', '#EC4899']}
+            height={160}
+          />
+        </div>
+
+        {/* Panel 3: Employees by Location */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employees by Location</span>
+            <span className="ref-panel-meta">5 Regional Hubs</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
             {[
-              { dept: 'Field Operations', count: 184, pct: 43.0, color: '#0F766E' },
-              { dept: 'Engineering & Automation', count: 76, pct: 17.8, color: '#17202A' },
-              { dept: 'Sales & Enterprise Accounts', count: 54, pct: 12.6, color: '#5F6B76' },
-              { dept: 'Customer Support', count: 48, pct: 11.2, color: '#8898AA' },
-              { dept: 'Finance & Accounts', count: 34, pct: 7.9, color: '#A0AEC0' },
-              { dept: 'Human Resources & Admin', count: 32, pct: 7.5, color: '#CBD5E1' },
-            ].map((item) => (
-              <div key={item.dept}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
-                  <span style={{ fontWeight: 500 }}>{item.dept}</span>
-                  <span style={{ fontWeight: 600 }}>{item.count} staff ({item.pct}%)</span>
+              { loc: 'Mumbai Central Hub', count: 168, pct: 100, color: '#3B82F6' },
+              { loc: 'Pune Tech Hub', count: 102, pct: 60.7, color: '#60A5FA' },
+              { loc: 'Bengaluru Facility', count: 76, pct: 45.2, color: '#93C5FD' },
+              { loc: 'Delhi NCR Hub', count: 54, pct: 32.1, color: '#BFDBFE' },
+              { loc: 'Hyderabad Tech Center', count: 28, pct: 16.6, color: '#DBEAFE' },
+            ].map((l) => (
+              <div key={l.loc} className="ref-hbar-row">
+                <span className="ref-hbar-label">{l.loc}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${l.pct}%`, backgroundColor: l.color }} />
                 </div>
-                <div style={{ width: '100%', height: 6, backgroundColor: 'var(--bg-subtle)', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ width: `${item.pct}%`, height: '100%', backgroundColor: item.color, borderRadius: 3 }} />
-                </div>
+                <span className="ref-hbar-val">{l.count}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Row 2: Demographics & What Needs Attention */}
-      <div className="two-col-grid">
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Workforce Category &amp; Tenure Distribution</span>
+      {/* ROW 2: Employee Category | Age Group Distribution | Tenure Distribution */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Employee Category */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employee Category</span>
+            <span className="ref-panel-meta">428 Staff</span>
           </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
-            <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Permanent</div>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>78% (334)</div>
-            </div>
-            <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Probation</div>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>10% (43)</div>
-            </div>
-            <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Contract</div>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>8% (34)</div>
-            </div>
-            <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Intern / Trainee</div>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>4% (17)</div>
-            </div>
-          </div>
+          <DonutMetricChart
+            centerValue="428"
+            centerLabel="Staff"
+            labels={['Permanent (78%)', 'Probation (10%)', 'Contract (8%)', 'Intern (4%)']}
+            data={[334, 43, 34, 17]}
+            colors={['#3B82F6', '#10B981', '#F59E0B', '#9333EA']}
+            height={160}
+          />
+        </div>
 
-          <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 6, color: 'var(--text-primary)' }}>
-            Tenure Distribution (Years of Service)
+        {/* Panel 2: Age Group Distribution */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Age Group Distribution</span>
+            <span className="ref-panel-meta">Demographics</span>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: 140, paddingTop: 20, paddingBottom: 6 }}>
             {[
-              { label: '< 1 Year', pct: 22, color: '#0F766E' },
-              { label: '1–3 Years', pct: 34, color: '#17202A' },
-              { label: '3–5 Years', pct: 24, color: '#5F6B76' },
-              { label: '5–10 Years', pct: 14, color: '#8898AA' },
-              { label: '> 10 Years', pct: 6, color: '#CBD5E1' },
-            ].map((t) => (
-              <div key={t.label} style={{ flex: 1, textAlign: 'center', padding: '6px 4px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)' }}>
-                <div style={{ fontSize: 12, fontWeight: 700 }}>{t.pct}%</div>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t.label}</div>
+              { group: '< 25', pct: 12, height: '32%', color: '#60A5FA' },
+              { group: '25-30', pct: 38, height: '100%', color: '#34D399' },
+              { group: '31-35', pct: 28, height: '74%', color: '#FBBF24' },
+              { group: '36-40', pct: 16, height: '42%', color: '#FB923C' },
+              { group: '41-45', pct: 6, height: '16%', color: '#A78BFA' },
+            ].map((b) => (
+              <div key={b.group} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#1E293B', marginBottom: 4 }}>{b.pct}%</span>
+                <div style={{ width: 26, height: b.height, backgroundColor: b.color, borderRadius: '3px 3px 0 0' }} />
+                <span style={{ fontSize: 9.5, color: '#64748B', marginTop: 4 }}>{b.group}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Attention / Findings Panel */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">What Needs Attention</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Workforce Demographics</span>
+        {/* Panel 3: Tenure Distribution */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Tenure Distribution</span>
+            <span className="ref-panel-meta">Years of Service</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--status-critical-dot)' }}>
-                <AlertCircle size={13} />
-                <span>Field Operations Technicians: High Utilization (84.5%)</span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: 140, paddingTop: 20, paddingBottom: 6 }}>
+            {[
+              { group: '< 1 Yr', pct: 22, height: '65%', color: '#60A5FA' },
+              { group: '1-3 Yrs', pct: 34, height: '100%', color: '#A78BFA' },
+              { group: '3-5 Yrs', pct: 24, height: '70%', color: '#38BDF8' },
+              { group: '5-10 Yrs', pct: 14, height: '41%', color: '#F87171' },
+              { group: '> 10 Yrs', pct: 6, height: '18%', color: '#94A3B8' },
+            ].map((b) => (
+              <div key={b.group} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#1E293B', marginBottom: 4 }}>{b.pct}%</span>
+                <div style={{ width: 26, height: b.height, backgroundColor: b.color, borderRadius: '3px 3px 0 0' }} />
+                <span style={{ fontSize: 9.5, color: '#64748B', marginTop: 4 }}>{b.group}</span>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-                184 technicians managing 186 live work orders across 5 hubs. Mumbai field cluster operates at capacity ceiling.
-              </p>
-            </div>
-
-            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--status-healthy-dot)' }}>
-                <CheckCircle2 size={13} />
-                <span>Attrition Remains Controlled at 3.7% Annualized</span>
-              </div>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-                Only 16 exits YTD against 48 additions, maintaining a positive net workforce velocity of +32 personnel.
-              </p>
-            </div>
-
-            <div style={{ padding: '8px 10px', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: 'var(--brand-primary)' }}>
-                <TrendingUp size={13} />
-                <span>43 Employees Eligible for Probation Confirmation</span>
-              </div>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-                Appraisal reviews completed for 39 candidates with 92% recommendation for permanent absorption.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Complete Employee Directory Table */}
-      <DataTable
-        title="Employee Roster Directory"
-        data={employees}
-        columns={columns}
-        keyExtractor={(item) => item.id}
-        onRowClick={(item) => openEmployee(item.id)}
-        searchPlaceholder="Search employees by name, ID, role, skill..."
-        pageSize={10}
-      />
+      {/* ROW 3: New Joiners vs Exits | Top 5 Departments | Key Insights */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: New Joiners vs Exits */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">New Joiners vs Exits</span>
+            <span className="ref-panel-meta">2026 Movement</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: 140, paddingTop: 20, paddingBottom: 6 }}>
+            {[
+              { month: 'Jan', join: 12, exit: 5 },
+              { month: 'Mar', join: 10, exit: 6 },
+              { month: 'May', join: 11, exit: 4 },
+              { month: 'Jul', join: 8, exit: 3 },
+              { month: 'Sep', join: 7, exit: 0 },
+            ].map((m) => (
+              <div key={m.month} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3 }}>
+                  <div style={{ width: 10, height: `${m.join * 8}px`, backgroundColor: '#34D399', borderRadius: '2px 2px 0 0' }} />
+                  <div style={{ width: 10, height: `${m.exit * 8}px`, backgroundColor: '#F87171', borderRadius: '2px 2px 0 0' }} />
+                </div>
+                <span style={{ fontSize: 9.5, color: '#64748B', marginTop: 4 }}>{m.month}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel 2: Top 5 Departments by Headcount */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Top 5 Departments by Headcount</span>
+            <span className="ref-panel-meta">Staff Share</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { dept: 'Operations', count: 184, pct: 100, color: '#3B82F6' },
+              { dept: 'Engineering & Automation', count: 76, pct: 41.3, color: '#60A5FA' },
+              { dept: 'Sales & Accounts', count: 54, pct: 29.3, color: '#93C5FD' },
+              { dept: 'Customer Support', count: 48, pct: 26.0, color: '#BFDBFE' },
+              { dept: 'Finance & Accounts', count: 34, pct: 18.5, color: '#DBEAFE' },
+            ].map((d) => (
+              <div key={d.dept} className="ref-hbar-row">
+                <span className="ref-hbar-label">{d.dept}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${d.pct}%`, backgroundColor: d.color }} />
+                </div>
+                <span className="ref-hbar-val">{d.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel 3: Key Insights */}
+        <div className="ref-insights-panel">
+          <div className="ref-insights-header">
+            <Lightbulb size={16} style={{ color: '#F59E0B' }} />
+            <span>Key Insights</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Total headcount increased by 8.8% compared to the previous quarter.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Employee annual attrition reduced by 18.8% compared to last year.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Operations has the highest headcount share at 43.0% (184 staff).</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>78% of all employees are under permanent employment contracts.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Majority of employees (66%) are in the core 25–35 age demographic.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Average organizational tenure of employees is 3.4 years.</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

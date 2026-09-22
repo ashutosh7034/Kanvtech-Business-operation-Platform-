@@ -2,258 +2,313 @@ import React from 'react';
 import { useFilters } from '../../context/FilterContext';
 import { useModalDrawer } from '../../context/ModalDrawerContext';
 import { DataService } from '../../data/dataService';
-import { COMPANY_INFO } from '../../data/mockData';
 import { FilterBar } from '../../components/common/FilterBar';
+import { HeadcountTrendChart } from '../../components/charts/HeadcountTrendChart';
 import { AttendanceTrendChart } from '../../components/charts/AttendanceTrendChart';
+import { RatingDistributionChart } from '../../components/charts/RatingDistributionChart';
+import { DonutMetricChart } from '../../components/charts/DonutMetricChart';
 import {
-  UserPlus,
-  ArrowRight,
-  ChevronRight,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  TrendingUp,
   Users,
+  CheckCircle2,
+  Calendar,
+  Briefcase,
+  UserPlus,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  Lightbulb,
 } from 'lucide-react';
 
 interface HrDashboardProps {
-  onNavigateTab: (tabId: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
-  const { period, location, department } = useFilters();
-  const { openHiringModal } = useModalDrawer();
+  const { location, department } = useFilters();
+  const { openEmployee } = useModalDrawer();
+  const employees = DataService.getEmployees(location, department);
 
-  // Unified canonical HR metrics view model
-  const hrData = DataService.getHrMetrics({ period, location, department });
-  const { pulse, whatMatters, regionalCapacity, recruitmentPipeline, peopleRisks, payroll } = hrData;
+  const topPerformers = employees
+    .slice()
+    .sort((a, b) => b.performanceScore - a.performanceScore)
+    .slice(0, 5);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      {/* 1. Header & Global Filters */}
-      <div className="section-header-wrap">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Top Page Header with Context Quote */}
+      <div className="ref-page-header">
         <div>
-          <div className="section-breadcrumb">
-            <span>People</span>
-            <ChevronRight size={11} />
-            <span className="current">Human Capital &amp; Operations</span>
+          <h1 className="ref-page-title">People &amp; Workforce Dashboard</h1>
+          <p className="ref-page-subtitle">
+            Workforce composition, attendance, performance and talent operations
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <FilterBar />
+          <div className="ref-quote-box">
+            <span className="ref-quote-text">"People, service and performance — connected."</span>
+            <div className="ref-quote-line" />
           </div>
-          <h1 className="greeting-title">People Overview</h1>
-          <div className="greeting-subtitle">
-            <span>Monday, 22 September 2026</span>
-            <span className="dot-separator">·</span>
-            <span>{COMPANY_INFO.name}</span>
-            <span className="dot-separator">·</span>
-            <span>{location}</span>
-            <span className="dot-separator">·</span>
-            <span>{department}</span>
-          </div>
-        </div>
-        <FilterBar />
-      </div>
-
-      {/* 2. Workforce Pulse Strip (6 Cards Aligned) */}
-      <div className="hr-brief-strip">
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('people')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">Total Workforce</span>
-          <span className="brief-value">{pulse.totalEmployees}</span>
-          <span className="brief-subtext">+{pulse.joinersCount} this month · 5 Hubs</span>
-        </div>
-
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">
-            {pulse.isHistorical ? 'Avg On-Duty' : 'Present On-Duty'}
-          </span>
-          <span className="brief-value" style={{ color: 'var(--status-healthy-dot)' }}>
-            {pulse.presentOnDuty}
-          </span>
-          <span className="brief-subtext">{pulse.attendanceRate}% attendance rate</span>
-        </div>
-
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">Approved Leave</span>
-          <span className="brief-value">{pulse.approvedLeave}</span>
-          <span className="brief-subtext">4.9% · Planned PTO</span>
-        </div>
-
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('attendance')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">Unplanned Absent</span>
-          <span className="brief-value" style={{ color: pulse.unplannedAbsent > 5 ? 'var(--status-critical-dot)' : 'inherit' }}>
-            {pulse.unplannedAbsent}
-          </span>
-          <span className="brief-subtext">3 Mumbai field techs</span>
-        </div>
-
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('recruitment')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">Open Positions</span>
-          <span className="brief-value" style={{ color: 'var(--brand-primary)' }}>
-            {pulse.openPositions}
-          </span>
-          <span className="brief-subtext">4 in Field Operations</span>
-        </div>
-
-        <div className="hr-brief-cell" onClick={() => onNavigateTab('performance')} style={{ cursor: 'pointer' }}>
-          <span className="brief-label">Monthly Attrition</span>
-          <span className="brief-value">{pulse.attritionRate}%</span>
-          <span className="brief-subtext">Target: &lt; 3.0% (Healthy)</span>
         </div>
       </div>
 
-      {/* 3. Operational Staffing Alert (Editorial Notice) */}
-      <div className="editorial-notice-panel">
-        <div className="editorial-notice-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span className="editorial-notice-tag">Staffing Alert</span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>· High Operational Impact</span>
+      {/* 6 Soft Tinted KPI Cards Row */}
+      <div className="ref-kpi-row">
+        {/* Card 1: Total Employees */}
+        <div className="ref-kpi-card tint-blue">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#2563EB' }}>
+              <Users size={16} />
+            </div>
+            <span className="ref-kpi-label">Total Employees</span>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Field Capacity Pressure</span>
+          <div className="ref-kpi-val">428</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +8.8%</span>
+            <span className="ref-kpi-context">vs previous quarter</span>
+          </div>
         </div>
 
-        <div className="editorial-headline">
-          {whatMatters.title}: Mumbai technician capacity is currently 13 staff below the daily operating requirement.
+        {/* Card 2: Present Today */}
+        <div className="ref-kpi-card tint-green">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
+              <CheckCircle2 size={16} />
+            </div>
+            <span className="ref-kpi-label">Present Today</span>
+          </div>
+          <div className="ref-kpi-val">397</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> 92.8%</span>
+            <span className="ref-kpi-context">of total workforce</span>
+          </div>
         </div>
 
-        <div className="editorial-metrics-grid">
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Deployment Hub</span>
-            <span className="editorial-metric-val">{whatMatters.location}</span>
+        {/* Card 3: On Leave */}
+        <div className="ref-kpi-card tint-amber">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#D97706' }}>
+              <Calendar size={16} />
+            </div>
+            <span className="ref-kpi-label">On Leave Today</span>
           </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Staff Deficit</span>
-            <span className="editorial-metric-val" style={{ color: 'var(--status-critical-dot)' }}>
-              {whatMatters.available} / {whatMatters.required} ({whatMatters.gapText})
+          <div className="ref-kpi-val">21</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend" style={{ color: '#D97706' }}>4.9%</span>
+            <span className="ref-kpi-context">approved PTO</span>
+          </div>
+        </div>
+
+        {/* Card 4: Open Positions */}
+        <div className="ref-kpi-card tint-rose">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#DC2626' }}>
+              <Briefcase size={16} />
+            </div>
+            <span className="ref-kpi-label">Open Positions</span>
+          </div>
+          <div className="ref-kpi-val">14</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend down"><ArrowUpRight size={13} /> 4 critical</span>
+            <span className="ref-kpi-context">Field Ops roles</span>
+          </div>
+        </div>
+
+        {/* Card 5: New Joiners (YTD) */}
+        <div className="ref-kpi-card tint-teal">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(15, 118, 110, 0.15)', color: '#0F766E' }}>
+              <UserPlus size={16} />
+            </div>
+            <span className="ref-kpi-label">New Joiners (YTD)</span>
+          </div>
+          <div className="ref-kpi-val">48</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowUpRight size={13} /> +12.0%</span>
+            <span className="ref-kpi-context">vs last year</span>
+          </div>
+        </div>
+
+        {/* Card 6: Attrition Rate */}
+        <div className="ref-kpi-card tint-purple">
+          <div className="ref-kpi-header">
+            <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(147, 51, 234, 0.15)', color: '#9333EA' }}>
+              <TrendingDown size={16} />
+            </div>
+            <span className="ref-kpi-label">Exits / Attrition</span>
+          </div>
+          <div className="ref-kpi-val">3.7%</div>
+          <div className="ref-kpi-footer">
+            <span className="ref-kpi-trend up"><ArrowDownRight size={13} /> -18.8%</span>
+            <span className="ref-kpi-context">16 exits YTD</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 1: Headcount Trend | Department Distribution | Location Distribution */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Headcount Trend */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employee Headcount Trend</span>
+            <span className="ref-panel-meta">Jan – Sep 2026</span>
+          </div>
+          <HeadcountTrendChart height={160} />
+        </div>
+
+        {/* Panel 2: Department Distribution */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employees by Department</span>
+            <span className="ref-panel-meta">428 Total</span>
+          </div>
+          <DonutMetricChart
+            centerValue="428"
+            centerLabel="Employees"
+            labels={['Operations', 'Engineering', 'Sales', 'Support', 'HR/Admin', 'Finance']}
+            data={[184, 76, 54, 48, 32, 34]}
+            colors={['#3B82F6', '#10B981', '#F59E0B', '#9333EA', '#0F766E', '#EC4899']}
+            height={160}
+          />
+        </div>
+
+        {/* Panel 3: Location Distribution */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Employees by Location Hub</span>
+            <span className="ref-panel-meta">5 Regional Hubs</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { loc: 'Mumbai Central Hub', count: 168, pct: 100, color: '#3B82F6' },
+              { loc: 'Pune Tech Hub', count: 102, pct: 60.7, color: '#60A5FA' },
+              { loc: 'Bengaluru Facility', count: 76, pct: 45.2, color: '#93C5FD' },
+              { loc: 'Delhi NCR Hub', count: 54, pct: 32.1, color: '#BFDBFE' },
+              { loc: 'Hyderabad Tech Center', count: 28, pct: 16.6, color: '#DBEAFE' },
+            ].map((l) => (
+              <div key={l.loc} className="ref-hbar-row">
+                <span className="ref-hbar-label">{l.loc}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${l.pct}%`, backgroundColor: l.color }} />
+                </div>
+                <span className="ref-hbar-val">{l.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 2: Attendance Trend | Attendance Status | Recruitment Funnel */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Attendance Trend */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Daily Attendance Trend (7-Day)</span>
+            <span className="ref-panel-meta">92.8% Average</span>
+          </div>
+          <AttendanceTrendChart height={160} />
+        </div>
+
+        {/* Panel 2: Attendance Status */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Attendance Status (Today)</span>
+            <span className="ref-panel-meta">428 Staff</span>
+          </div>
+          <DonutMetricChart
+            centerValue="428"
+            centerLabel="Roster"
+            labels={['Present On-Duty', 'Approved Leave', 'Unplanned Absent']}
+            data={[397, 21, 10]}
+            colors={['#10B981', '#F59E0B', '#EF4444']}
+            height={160}
+          />
+        </div>
+
+        {/* Panel 3: Recruitment Funnel */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Recruitment Pipeline Funnel</span>
+            <span className="ref-panel-meta">182 Inflow</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { stage: '1. Applied / Inflow', count: 182, pct: 100, color: '#3B82F6' },
+              { stage: '2. Screened & Qualified', count: 84, pct: 46.2, color: '#10B981' },
+              { stage: '3. Technical Interview', count: 36, pct: 19.8, color: '#F59E0B' },
+              { stage: '4. Executive Offer', count: 9, pct: 4.9, color: '#9333EA' },
+              { stage: '5. Joined / Onboarded', count: 7, pct: 3.8, color: '#0F766E' },
+            ].map((s) => (
+              <div key={s.stage} className="ref-hbar-row">
+                <span className="ref-hbar-label">{s.stage}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
+                </div>
+                <span className="ref-hbar-val">{s.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 3: Performance Distribution | Top Performers Table | Performance by Category */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Performance Rating Distribution */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Performance Rating Distribution</span>
+            <span className="ref-panel-meta">FY 2026-27</span>
+          </div>
+          <RatingDistributionChart height={160} />
+        </div>
+
+        {/* Panel 2: Top Performers Table */}
+        <div className="ref-panel" style={{ padding: '12px 14px' }}>
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Top Performers (This Year)</span>
+            <span
+              style={{ fontSize: 11, color: '#2563EB', cursor: 'pointer', fontWeight: 600 }}
+              onClick={() => onNavigateTab && onNavigateTab('performance')}
+            >
+              View All &rarr;
             </span>
           </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Operational Impact</span>
-            <span className="editorial-metric-val">18 Orders Affected (4 Critical)</span>
-          </div>
-          <div className="editorial-metric-item">
-            <span className="editorial-metric-label">Overtime Burden</span>
-            <span className="editorial-metric-val">{whatMatters.overtimeHours} hrs (₹14.6L)</span>
-          </div>
-        </div>
-
-        <div className="editorial-notice-footer">
-          <span>Action recommended: Authorize 5 Field Technician requisitions or initiate inter-hub reassignments.</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <button
-              className="action-link-btn"
-              onClick={() =>
-                openHiringModal({
-                  title: 'Senior Field Technician - Industrial HVAC',
-                  department: 'Field Operations',
-                  location: 'Mumbai',
-                  requiredCount: 5,
-                  priority: 'critical',
-                  reason: 'Published emergency requisition to resolve Mumbai Field Operations capacity deficit (-13 gap).',
-                  skillsRequired: ['HVAC Industrial Level III', 'Chiller Plant Operations', 'Preventive Maintenance'],
-                })
-              }
-            >
-              <UserPlus size={13} />
-              <span>Create Requisition</span>
-            </button>
-            <button className="action-link-btn" onClick={() => onNavigateTab('workforce_planning')}>
-              <span>Simulate Capacity</span>
-              <ArrowRight size={13} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. 7-Day Attendance Trend & Recruitment Funnel */}
-      <div className="two-col-grid">
-        {/* Attendance Trend Chart */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">7-Day Daily Attendance &amp; Workforce Deployment</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('attendance')}>
-              <span>Full Roster</span>
-              <ArrowRight size={12} />
-            </button>
-          </div>
-          <AttendanceTrendChart height={220} />
-        </div>
-
-        {/* Recruitment Pipeline Funnel */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Recruitment Pipeline Funnel</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('recruitment')}>
-              <span>Recruitment Hub</span>
-              <ArrowRight size={12} />
-            </button>
-          </div>
-
-          <div className="funnel-container">
-            <div className="funnel-step">
-              <span className="funnel-step-label">Applied</span>
-              <span className="funnel-step-val">{recruitmentPipeline.applied}</span>
-            </div>
-            <div className="funnel-step">
-              <span className="funnel-step-label">Screening</span>
-              <span className="funnel-step-val">{recruitmentPipeline.screening}</span>
-            </div>
-            <div className="funnel-step">
-              <span className="funnel-step-label">Technical</span>
-              <span className="funnel-step-val">{recruitmentPipeline.technical}</span>
-            </div>
-            <div className="funnel-step">
-              <span className="funnel-step-label">Interview</span>
-              <span className="funnel-step-val">{recruitmentPipeline.interview}</span>
-            </div>
-            <div className="funnel-step">
-              <span className="funnel-step-label">Offer</span>
-              <span className="funnel-step-val">{recruitmentPipeline.offer}</span>
-            </div>
-            <div className="funnel-step">
-              <span className="funnel-step-label">Joined</span>
-              <span className="funnel-step-val" style={{ color: 'var(--status-healthy-dot)' }}>{recruitmentPipeline.joined}</span>
-            </div>
-          </div>
-
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 10 }}>
-            Active Priority: <strong>Senior Field Technician</strong> (5 positions in Mumbai Hub)
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Regional Hub Matrix & Secondary Operational Pulse */}
-      <div className="two-col-grid">
-        {/* Regional Hub Matrix */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Regional Hub Capacity Matrix</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('workforce_planning')}>
-              <span>Capacity Simulator</span>
-              <ArrowRight size={12} />
-            </button>
-          </div>
-
-          <table className="ledger-table">
+          <table className="ref-table">
             <thead>
               <tr>
-                <th>Regional Hub</th>
-                <th>Required</th>
-                <th>Available</th>
-                <th>Deficit</th>
-                <th>Status</th>
+                <th style={{ width: 24 }}>#</th>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Rating</th>
+                <th>Score</th>
               </tr>
             </thead>
             <tbody>
-              {regionalCapacity.map((hub) => (
-                <tr key={hub.region}>
-                  <td style={{ fontWeight: 600 }}>{hub.region}</td>
-                  <td>{hub.required}</td>
-                  <td>{hub.available}</td>
-                  <td style={{ fontWeight: 600, color: hub.gap < 0 ? 'var(--status-critical-dot)' : 'var(--status-healthy-dot)' }}>
-                    {hub.gap > 0 ? '+' : ''}{hub.gap}
+              {topPerformers.map((emp, idx) => (
+                <tr
+                  key={emp.id}
+                  onClick={() => openEmployee(emp.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td className="ref-table-rank">{idx + 1}</td>
+                  <td style={{ fontWeight: 600, color: '#0F766E' }}>{emp.name}</td>
+                  <td>{emp.department}</td>
+                  <td style={{ fontWeight: 700, color: '#16A34A' }}>
+                    {(emp.performanceScore / 20).toFixed(1)}
                   </td>
                   <td>
-                    <span className="status-indicator">
-                      <span className={`status-dot ${hub.status === 'Deficit' ? 'critical' : hub.status === 'Healthy' ? 'healthy' : 'attention'}`} />
-                      <span>{hub.status}</span>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '1px 6px',
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        backgroundColor: '#DCFCE7',
+                        color: '#166534',
+                      }}
+                    >
+                      {emp.performanceScore}%
                     </span>
                   </td>
                 </tr>
@@ -262,143 +317,121 @@ export const HrDashboard: React.FC<HrDashboardProps> = ({ onNavigateTab }) => {
           </table>
         </div>
 
-        {/* Secondary Operational Metrics */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Operations &amp; Compliance Pulse</span>
+        {/* Panel 3: Performance by Category */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Performance by Employee Category</span>
+            <span className="ref-panel-meta">4.1 Org Avg</span>
           </div>
-
-          <div className="hr-secondary-strip" style={{ border: 'none', padding: 0 }}>
-            <div className="hr-secondary-cell" onClick={() => onNavigateTab('recruitment')} style={{ cursor: 'pointer' }}>
-              <span className="brief-label">Recruitment</span>
-              <span style={{ fontSize: 18, fontWeight: 700 }}>14 Open</span>
-              <span className="brief-subtext">182 applicants · 9 offers</span>
-            </div>
-            <div className="hr-secondary-cell" onClick={() => onNavigateTab('workforce_planning')} style={{ cursor: 'pointer' }}>
-              <span className="brief-label">Overtime</span>
-              <span style={{ fontSize: 18, fontWeight: 700 }}>312 Hours</span>
-              <span className="brief-subtext">₹14.6L accrued cost</span>
-            </div>
-            <div className="hr-secondary-cell" onClick={() => onNavigateTab('people')} style={{ cursor: 'pointer' }}>
-              <span className="brief-label">Retention</span>
-              <span style={{ fontSize: 18, fontWeight: 700 }}>1.8% Attrition</span>
-              <span className="brief-subtext">7 joiners · 2 exits</span>
-            </div>
-            <div className="hr-secondary-cell" onClick={() => onNavigateTab('skills_certs')} style={{ cursor: 'pointer' }}>
-              <span className="brief-label">Compliance</span>
-              <span style={{ fontSize: 18, fontWeight: 700 }}>9 Expiring</span>
-              <span className="brief-subtext">86% training completion</span>
-            </div>
-          </div>
+          <DonutMetricChart
+            centerValue="4.1"
+            centerLabel="Average Rating"
+            labels={['Management (4.3)', 'Permanent (4.1)', 'Probation (3.8)', 'Contract (3.7)', 'Intern (4.0)']}
+            data={[4.3, 4.1, 3.8, 3.7, 4.0]}
+            colors={['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#9333EA']}
+            height={160}
+          />
         </div>
       </div>
 
-      {/* 6. People Risks & Payroll Snapshot */}
-      <div className="two-col-grid">
-        {/* People Risks Watchlist */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">People &amp; Compliance Risks</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('skills_certs')}>
-              <span>View Certifications</span>
-              <ArrowRight size={12} />
-            </button>
+      {/* ROW 4: Review Cycle Milestones | Training Development | Key Insights */}
+      <div className="ref-grid-3col">
+        {/* Panel 1: Review Cycle Status */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Review Cycle Status (FY 2026-27)</span>
+            <span className="ref-panel-meta">94.8% Done</span>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 10px', backgroundColor: '#F8FAFC', borderRadius: 6, border: '1px solid #E2E8F0', marginTop: 10 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 9.5, color: '#64748B' }}>GOAL SETTING</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#16A34A' }}>✓ Jan 2026</div>
+            </div>
+            <div style={{ height: 1, width: 20, backgroundColor: '#E2E8F0' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 9.5, color: '#64748B' }}>MID-YEAR</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#16A34A' }}>✓ Jun 2026</div>
+            </div>
+            <div style={{ height: 1, width: 20, backgroundColor: '#E2E8F0' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 9.5, color: '#64748B' }}>FINAL REVIEW</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#2563EB' }}>● Sep (94.8%)</div>
+            </div>
+            <div style={{ height: 1, width: 20, backgroundColor: '#E2E8F0' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 9.5, color: '#64748B' }}>PUBLISH</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B' }}>Oct 2026</div>
+            </div>
           </div>
 
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Risk Category</th>
-                <th>Affected Count</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Certifications Expiring &lt; 30 Days</td>
-                <td style={{ fontWeight: 600 }}>{peopleRisks.certExpiring} Technicians</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot attention" />
-                    <span>Attention</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>High Unplanned Absence (&gt; 3 Days)</td>
-                <td style={{ fontWeight: 600 }}>{peopleRisks.highAbsence} Employees</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot critical" />
-                    <span>Investigate</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>Field Overtime Threshold Breach</td>
-                <td style={{ fontWeight: 600 }}>{peopleRisks.overtimeHours} Hours</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot attention" />
-                    <span>Review</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>Critical Open Requisitions</td>
-                <td style={{ fontWeight: 600 }}>{peopleRisks.criticalHires} Roles</td>
-                <td>
-                  <span className="status-indicator">
-                    <span className="status-dot critical" />
-                    <span>Urgent</span>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
+            <div style={{ padding: '6px 8px', backgroundColor: '#F8FAFC', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+              <div style={{ fontSize: 10, color: '#64748B' }}>Reviews Completed</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#16A34A' }}>406 / 428</div>
+            </div>
+            <div style={{ padding: '6px 8px', backgroundColor: '#F8FAFC', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+              <div style={{ fontSize: 10, color: '#64748B' }}>Pending Signoff</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#D97706' }}>22 Staff</div>
+            </div>
+          </div>
         </div>
 
-        {/* Executive Payroll Snapshot */}
-        <div className="section-panel">
-          <div className="section-panel-header">
-            <span className="section-panel-title">Executive Payroll Snapshot</span>
-            <button className="action-link-btn" onClick={() => onNavigateTab('payroll')}>
-              <span>View Payroll</span>
-              <ArrowRight size={12} />
-            </button>
+        {/* Panel 2: Training & Development Focus */}
+        <div className="ref-panel">
+          <div className="ref-panel-header">
+            <span className="ref-panel-title">Training &amp; Development Needs</span>
+            <span className="ref-panel-meta">Based on Reviews</span>
           </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+            {[
+              { need: 'Leadership Skills', count: 52, pct: 100, color: '#3B82F6' },
+              { need: 'HVAC & Automation Tech', count: 38, pct: 73.1, color: '#10B981' },
+              { need: 'SLA & Customer Comms', count: 46, pct: 88.5, color: '#F59E0B' },
+              { need: 'Time Management', count: 28, pct: 53.8, color: '#9333EA' },
+              { need: 'Safety & OSHA Standards', count: 22, pct: 42.3, color: '#EC4899' },
+            ].map((t) => (
+              <div key={t.need} className="ref-hbar-row">
+                <span className="ref-hbar-label">{t.need}</span>
+                <div className="ref-hbar-track">
+                  <div className="ref-hbar-fill" style={{ width: `${t.pct}%`, backgroundColor: t.color }} />
+                </div>
+                <span className="ref-hbar-val">{t.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Amount / Status</th>
-                <th>Context</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Gross Monthly Payroll</td>
-                <td style={{ fontWeight: 600 }}>{payroll.monthlyPayrollMasked}</td>
-                <td style={{ color: 'var(--text-muted)' }}>428 Active Roster</td>
-              </tr>
-              <tr>
-                <td>Overtime Direct Cost</td>
-                <td style={{ fontWeight: 600 }}>₹{payroll.overtimeCostLakhs}L</td>
-                <td style={{ color: 'var(--text-muted)' }}>Mumbai field surge</td>
-              </tr>
-              <tr>
-                <td>Statutory Compliance</td>
-                <td style={{ fontWeight: 600, color: 'var(--status-healthy-dot)' }}>{payroll.complianceStatus}</td>
-                <td style={{ color: 'var(--text-muted)' }}>100% PF / ESI remitted</td>
-              </tr>
-              <tr>
-                <td>Disbursement Cycle</td>
-                <td style={{ fontWeight: 600 }}>28th of Month</td>
-                <td style={{ color: 'var(--text-muted)' }}>Scheduled</td>
-              </tr>
-            </tbody>
-          </table>
+        {/* Panel 3: Key Insights */}
+        <div className="ref-insights-panel">
+          <div className="ref-insights-header">
+            <Lightbulb size={16} style={{ color: '#F59E0B' }} />
+            <span>Key Insights</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Total headcount increased by 8.8% compared with previous quarter.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Employee annualized attrition reduced to 3.7% (16 exits YTD).</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Field Operations has the largest workforce share at 43.0% (184 staff).</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>78% of organizational workforce is under permanent employment tenure.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Average performance rating improved to 4.1 / 5.0 with 94.8% review completion.</span>
+          </div>
+          <div className="ref-insight-item">
+            <CheckCircle2 size={14} className="ref-insight-icon" />
+            <span>Average organizational employee tenure is 3.4 years.</span>
+          </div>
         </div>
       </div>
     </div>
