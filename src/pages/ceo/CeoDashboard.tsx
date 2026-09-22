@@ -35,7 +35,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header with Filter Bar */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">CEO Business Dashboard</h1>
@@ -43,13 +43,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
             Business performance, operations, workforce and customer overview
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <FilterBar showDepartment={true} />
-          <div className="ref-quote-box">
-            <span className="ref-quote-text">"Operational clarity. Better decisions."</span>
-            <div className="ref-quote-line" />
-          </div>
-        </div>
+        <FilterBar showDepartment={true} />
       </div>
 
       {/* 6 Soft Tinted KPI Cards Row */}
@@ -384,27 +378,35 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({ onNavigateTab }) => 
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>Revenue increased by 6.2% compared with previous operating period.</span>
+            <span>Revenue is ₹{metrics.rev.current}L ({metrics.rev.label}) tracking at +{metrics.rev.growth}% growth.</span>
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>Mumbai field operations has a 13-technician capacity gap affecting 18 work orders.</span>
+            <span>
+              {department === 'Administration & HR'
+                ? 'Administration & HR staffing is 100% stable with 0 SLA risks and 0 overtime hours.'
+                : location === 'Pune'
+                ? 'Pune Tech Zone operations at 95.8% SLA with 39 work orders completed.'
+                : location === 'Bengaluru'
+                ? 'Bengaluru Hub operating at 96.4% SLA with optimal technician distribution.'
+                : `Mumbai field operations has a 13-technician capacity gap affecting ${metrics.sla.affectedOrdersCount} work orders.`}
+            </span>
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>SLA compliance is currently at 94.2% against target of 96.0%.</span>
+            <span>SLA compliance is currently at {metrics.sla.compliance}% against target of 96.0%.</span>
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>12 work orders are approaching critical SLA breach windows across 5 sites.</span>
+            <span>{metrics.sla.atRiskCount} work orders are approaching critical SLA risk windows.</span>
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>7 Master Service Agreements (₹2.3 Cr ACV) are renewing within 30 days.</span>
+            <span>{metrics.contracts.expiring30d} Master Service Agreements are renewing within 30 days.</span>
           </div>
           <div className="ref-insight-item">
             <CheckCircle2 size={14} className="ref-insight-icon" />
-            <span>4 customer accounts require immediate executive SLA attention.</span>
+            <span>{metrics.cust.attention + metrics.cust.critical} customer accounts in {location === 'All Locations' ? 'portfolio' : location} require operational attention.</span>
           </div>
         </div>
       </div>

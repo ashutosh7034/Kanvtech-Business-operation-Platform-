@@ -17,17 +17,13 @@ import {
 export const PayrollOverviewPage: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Payroll Dashboard</h1>
           <p className="ref-page-subtitle">
             Comprehensive payroll insights for better compensation and cost decisions
           </p>
-        </div>
-        <div className="ref-quote-box">
-          <span className="ref-quote-text">"Accurate Payroll. A Happier Workforce."</span>
-          <div className="ref-quote-line" />
         </div>
       </div>
 

@@ -20,7 +20,7 @@ export const RecruitmentPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header with Action Button */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Recruitment Dashboard</h1>
@@ -28,16 +28,10 @@ export const RecruitmentPage: React.FC = () => {
             Hiring pipeline, workforce demand and talent acquisition performance
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button className="btn-primary" onClick={() => openHiringModal()} style={{ padding: '6px 12px' }}>
-            <UserPlus size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
-            <span>Create Requisition</span>
-          </button>
-          <div className="ref-quote-box">
-            <span className="ref-quote-text">"Right Talent. Strong Teams. High Growth."</span>
-            <div className="ref-quote-line" />
-          </div>
-        </div>
+        <button className="btn-primary" onClick={() => openHiringModal()} style={{ padding: '6px 12px' }}>
+          <UserPlus size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <span>Create Requisition</span>
+        </button>
       </div>
 
       {/* 6 Soft Tinted KPI Cards Row */}

@@ -305,41 +305,33 @@ export class DataService {
 
     // 3. Workforce (Differentiate snapshot vs average)
     const isHistorical = period !== 'Today';
-    let availableStaff = 397;
-    let requiredStaff = 410;
-    let totalHeadcount = 428;
-    let contextNote = '397 on duty • 21 leave • 10 absent (Total: 428)';
-    let availableLabel = 'Current On-Duty';
+    const totalStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesTotal, 0);
+    const availStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesAvailable, 0);
+    const leaveStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesLeave, 0);
+    const absentStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesAbsent, 0);
+    const countDays = Math.max(1, new Set(currentRecords.map((r) => r.date)).size);
 
-    if (location === 'Mumbai') {
-      totalHeadcount = 172;
-      requiredStaff = 172;
-      availableStaff = 156;
-      contextNote = 'Field Ops: 71 available vs 84 required (-13 gap)';
+    let totalHeadcount = Math.round(totalStaffSum / countDays) || 428;
+    let availableStaff = Math.round(availStaffSum / countDays) || 397;
+    let leaveStaff = Math.round(leaveStaffSum / countDays) || 21;
+    let absentStaff = Math.round(absentStaffSum / countDays) || 10;
+    let requiredStaff = totalHeadcount;
+
+    let availableLabel = isHistorical ? 'Average On-Duty' : 'Current On-Duty';
+    let contextNote = `${availableStaff} on duty • ${leaveStaff} leave • ${absentStaff} absent (Total: ${totalHeadcount})`;
+
+    if (department === 'Administration & HR') {
+      contextNote = `Admin & HR: ${availableStaff} on duty • 100% policy compliance`;
+    } else if (location === 'Mumbai' && (!department || department === 'Field Operations' || department === 'All Departments')) {
+      contextNote = `Mumbai Field: ${availableStaff} available vs ${requiredStaff} required (-13 gap)`;
     } else if (location === 'Pune') {
-      totalHeadcount = 94;
-      requiredStaff = 94;
-      availableStaff = 89;
-      contextNote = 'Field Ops: 49 available vs 52 required (-3 gap)';
+      contextNote = `Pune Field: ${availableStaff} available vs ${requiredStaff} required (-3 gap)`;
     } else if (location === 'Bengaluru') {
-      totalHeadcount = 86;
-      requiredStaff = 86;
-      availableStaff = 82;
-      contextNote = 'Field Ops: 59 available vs 61 required (-2 gap)';
+      contextNote = `Bengaluru Hub: ${availableStaff} available vs ${requiredStaff} required (-2 gap)`;
     }
 
     if (isHistorical) {
-      availableLabel = 'Average On-Duty';
-      if (period === '7 Days') {
-        availableStaff = Math.round(availableStaff * 0.99);
-        contextNote = `7-Day Average On-Duty: ${availableStaff} / ${totalHeadcount} staff`;
-      } else if (period === '30 Days') {
-        availableStaff = Math.round(availableStaff * 0.98);
-        contextNote = `30-Day Average On-Duty: ${availableStaff} / ${totalHeadcount} staff`;
-      } else {
-        availableStaff = Math.round(availableStaff * 0.97);
-        contextNote = `Quarter Average On-Duty: ${availableStaff} / ${totalHeadcount} staff`;
-      }
+      contextNote = `${period} Avg: ${availableStaff} / ${totalHeadcount} staff on duty (${Math.round((availableStaff / totalHeadcount) * 100)}% utilization)`;
     }
 
     const workforceGap = availableStaff - requiredStaff;
@@ -442,90 +434,25 @@ export class DataService {
     const { period, location, department } = filters;
     const { currentRecords, dateRange } = this.getPeriodRecords(period, location, department);
 
-    // Filtered canonical workforce calculation
-    let totalEmployees = 428;
-    let presentOnDuty = 397;
-    let approvedLeave = 21;
-    let unplannedAbsent = 10;
-    let openPositions = 14;
+    // Filtered canonical workforce calculation from records
+    const totalStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesTotal, 0);
+    const availStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesAvailable, 0);
+    const leaveStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesLeave, 0);
+    const absentStaffSum = currentRecords.reduce((sum, r) => sum + r.employeesAbsent, 0);
+    const otHrsSum = currentRecords.reduce((sum, r) => sum + r.overtimeHours, 0);
+    const otCostSum = currentRecords.reduce((sum, r) => sum + r.overtimeCost, 0);
+    const openPosSum = currentRecords.reduce((sum, r) => sum + r.openPositions, 0);
+    const countDays = Math.max(1, new Set(currentRecords.map((r) => r.date)).size);
+
+    let totalEmployees = Math.round(totalStaffSum / countDays) || 428;
+    let presentOnDuty = Math.round(availStaffSum / countDays) || 397;
+    let approvedLeave = Math.round(leaveStaffSum / countDays) || 21;
+    let unplannedAbsent = Math.round(absentStaffSum / countDays) || 10;
+    let openPositions = Math.max(1, Math.round(openPosSum / countDays)) || 14;
+    let overtimeHours = Math.round(otHrsSum);
+    let overtimeCost = Math.round(otCostSum * 10) / 10;
     let attritionRate = 1.8;
-    let overtimeHours = 312;
-    let overtimeCost = 14.6;
-
-    if (location === 'Mumbai') {
-      totalEmployees = 172;
-      presentOnDuty = 156;
-      approvedLeave = 11;
-      unplannedAbsent = 5;
-      openPositions = 7;
-      overtimeHours = 196;
-      overtimeCost = 9.2;
-    } else if (location === 'Pune') {
-      totalEmployees = 94;
-      presentOnDuty = 89;
-      approvedLeave = 4;
-      unplannedAbsent = 1;
-      openPositions = 3;
-      overtimeHours = 48;
-      overtimeCost = 2.2;
-    } else if (location === 'Bengaluru') {
-      totalEmployees = 86;
-      presentOnDuty = 82;
-      approvedLeave = 3;
-      unplannedAbsent = 1;
-      openPositions = 2;
-      overtimeHours = 38;
-      overtimeCost = 1.8;
-    } else if (location === 'Hyderabad') {
-      totalEmployees = 48;
-      presentOnDuty = 45;
-      approvedLeave = 2;
-      unplannedAbsent = 1;
-      openPositions = 1;
-      overtimeHours = 18;
-      overtimeCost = 0.8;
-    } else if (location === 'Delhi NCR') {
-      totalEmployees = 28;
-      presentOnDuty = 25;
-      approvedLeave = 1;
-      unplannedAbsent = 2;
-      openPositions = 1;
-      overtimeHours = 12;
-      overtimeCost = 0.6;
-    }
-
-    if (department === 'Field Operations') {
-      totalEmployees = Math.round(totalEmployees * 0.48);
-      presentOnDuty = Math.round(presentOnDuty * 0.47);
-      approvedLeave = Math.round(approvedLeave * 0.50);
-      unplannedAbsent = Math.round(unplannedAbsent * 0.60);
-      openPositions = Math.max(4, Math.round(openPositions * 0.60));
-      overtimeHours = Math.round(overtimeHours * 0.85);
-    } else if (department === 'Engineering') {
-      totalEmployees = Math.round(totalEmployees * 0.20);
-      presentOnDuty = Math.round(presentOnDuty * 0.20);
-      approvedLeave = Math.round(approvedLeave * 0.20);
-      unplannedAbsent = Math.max(0, Math.round(unplannedAbsent * 0.10));
-      openPositions = 2;
-      overtimeHours = Math.round(overtimeHours * 0.10);
-    }
-
     const isHistorical = period !== 'Today';
-    if (isHistorical) {
-      if (period === '7 Days') {
-        presentOnDuty = Math.round(presentOnDuty * 0.99);
-        overtimeHours = Math.round(overtimeHours * 5.8);
-        overtimeCost = Math.round(overtimeCost * 5.8 * 10) / 10;
-      } else if (period === '30 Days') {
-        presentOnDuty = Math.round(presentOnDuty * 0.98);
-        overtimeHours = Math.round(overtimeHours * 24.2);
-        overtimeCost = Math.round(overtimeCost * 24.2 * 10) / 10;
-      } else {
-        presentOnDuty = Math.round(presentOnDuty * 0.97);
-        overtimeHours = Math.round(overtimeHours * 68.5);
-        overtimeCost = Math.round(overtimeCost * 68.5 * 10) / 10;
-      }
-    }
 
     const attendanceRate = totalEmployees > 0 ? Math.round((presentOnDuty / totalEmployees) * 100 * 10) / 10 : 92.8;
 
@@ -612,20 +539,42 @@ export class DataService {
   // SUPPORTING CALCULATIONS & STATIC HELPERS
   // =========================================================================
   static calculateCustomerSummary(location?: string) {
-    const customers = MOCK_CUSTOMERS.filter(
+    let totalAccounts = 86;
+    let healthy = 74;
+    let attention = 8;
+    let critical = 4;
+
+    if (location === 'Mumbai') {
+      totalAccounts = 34;
+      healthy = 28;
+      attention = 4;
+      critical = 2;
+    } else if (location === 'Pune') {
+      totalAccounts = 22;
+      healthy = 20;
+      attention = 2;
+      critical = 0;
+    } else if (location === 'Bengaluru') {
+      totalAccounts = 18;
+      healthy = 15;
+      attention = 2;
+      critical = 1;
+    } else if (location === 'Hyderabad') {
+      totalAccounts = 8;
+      healthy = 7;
+      attention = 0;
+      critical = 1;
+    } else if (location === 'Delhi NCR') {
+      totalAccounts = 4;
+      healthy = 4;
+      attention = 0;
+      critical = 0;
+    }
+
+    const sampleCustomers = MOCK_CUSTOMERS.filter(
       (c) => !location || location === 'All Locations' || c.location === location
     );
-    const totalAccounts = customers.length;
-    const healthy = customers.filter((c) => c.health === 'healthy').length;
-    const attention = customers.filter((c) => c.health === 'attention').length;
-    const critical = customers.filter((c) => c.health === 'critical').length;
-
-    const top = customers.find((c) => c.name === 'Acme Industries') || customers[0] || {
-      name: 'Acme Industries',
-      slaCompliance: 91,
-      contractValue: '₹12.4L',
-      openWorkOrders: 18,
-    };
+    const top = sampleCustomers[0] || MOCK_CUSTOMERS[0];
 
     return {
       totalAccounts,
@@ -636,7 +585,7 @@ export class DataService {
         name: top.name,
         sla: top.slaCompliance,
         contractValue: top.contractValue,
-        slaRisksCount: 3,
+        slaRisksCount: top.health === 'critical' ? 4 : 2,
         openOrdersCount: top.openWorkOrders,
       },
     };
@@ -653,6 +602,57 @@ export class DataService {
   }
 
   static calculateBusinessSignal(period: TimePeriod, location?: string, department?: string) {
+    if (department === 'Administration & HR') {
+      return {
+        title: 'HR COMPLIANCE & RECRUITMENT PIPELINE ON TRACK',
+        badge: 'Stable Growth' as const,
+        location: location || 'All Locations',
+        department: 'Administration & HR',
+        required: 26,
+        available: 24,
+        gap: 0,
+        affectedOrders: 0,
+        criticalSlaRisks: 0,
+        contractExposure: '₹0.0L',
+        primaryDriver: 'Internal governance & talent acquisition',
+        summaryText: 'Administration & HR headcount operates with 100% compliance, 14 active open positions, and zero field SLA exposure.',
+      };
+    }
+
+    if (department === 'Customer Support') {
+      return {
+        title: 'CUSTOMER DESK RESOLUTION EFFICIENCY STABLE',
+        badge: 'Stable Growth' as const,
+        location: location || 'All Locations',
+        department: 'Customer Support',
+        required: 42,
+        available: 39,
+        gap: -1,
+        affectedOrders: 2,
+        criticalSlaRisks: 0,
+        contractExposure: '₹1.4L',
+        primaryDriver: 'Helpdesk response times',
+        summaryText: 'Customer support has maintained a 2.4-hour first response average across 86 accounts with 96.2% customer satisfaction.',
+      };
+    }
+
+    if (department === 'Sales & Enterprise Accounts') {
+      return {
+        title: 'ENTERPRISE CONTRACT RENEWALS ON SCHEDULE',
+        badge: 'Stable Growth' as const,
+        location: location || 'All Locations',
+        department: 'Sales & Enterprise Accounts',
+        required: 34,
+        available: 32,
+        gap: 0,
+        affectedOrders: 0,
+        criticalSlaRisks: 0,
+        contractExposure: '₹18.7 Cr',
+        primaryDriver: 'Q3 renewal pipeline',
+        summaryText: 'Sales team has secured 94% retention on expiring contracts with ₹2.3 Cr pipeline in active negotiation.',
+      };
+    }
+
     if (location === 'Pune') {
       return {
         title: 'PLANNED PREVENTIVE MAINTENANCE SURGE',
@@ -675,7 +675,7 @@ export class DataService {
         title: 'DATA CENTER COOLING EXPANSION',
         badge: 'Stable Growth' as const,
         location: 'Bengaluru Hub',
-        department: 'Engineering',
+        department: 'Engineering & Automation',
         required: 61,
         available: 59,
         gap: -2,
@@ -799,10 +799,10 @@ export class DataService {
   static calculateDepartmentSignals(location?: string) {
     return [
       { name: 'Field Operations', status: 'warning' as const, label: 'Capacity pressure (-13 gap in Mumbai)', trend: 'down' as const },
-      { name: 'Engineering', status: 'healthy' as const, label: 'Healthy (96% SLA on automation)', trend: 'up' as const },
-      { name: 'Customer Support', status: 'healthy' as const, label: 'Stable (MTTR 2.8 hrs)', trend: 'stable' as const },
-      { name: 'Sales', status: 'healthy' as const, label: 'Strong (+8.4% pipeline growth)', trend: 'up' as const },
-      { name: 'HR & Admin', status: 'attention' as const, label: 'Staffing escalation active', trend: 'stable' as const },
+      { name: 'Engineering & Automation', status: 'healthy' as const, label: 'Healthy (96.4% SLA on plant controls)', trend: 'up' as const },
+      { name: 'Customer Support', status: 'healthy' as const, label: 'Stable (MTTR 2.4 hrs, CSAT 96.2%)', trend: 'stable' as const },
+      { name: 'Sales & Enterprise Accounts', status: 'healthy' as const, label: 'Strong (+8.4% pipeline growth)', trend: 'up' as const },
+      { name: 'Administration & HR', status: 'healthy' as const, label: '100% Policy Compliance & Staffing', trend: 'stable' as const },
     ];
   }
 

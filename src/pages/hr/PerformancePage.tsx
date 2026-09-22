@@ -26,17 +26,13 @@ export const PerformancePage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Performance Management Dashboard</h1>
           <p className="ref-page-subtitle">
             Measure performance, drive growth and build a stronger workforce
           </p>
-        </div>
-        <div className="ref-quote-box">
-          <span className="ref-quote-text">"Feedback today. A better tomorrow."</span>
-          <div className="ref-quote-line" />
         </div>
       </div>
 
@@ -57,11 +53,11 @@ export const PerformancePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 2: Performance Reviews Completed */}
+        {/* Card 2: Reviews Completed */}
         <div className="ref-kpi-card tint-green">
           <div className="ref-kpi-header">
             <div className="ref-kpi-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
-              <Target size={16} />
+              <CheckCircle2 size={16} />
             </div>
             <span className="ref-kpi-label">Reviews Completed</span>
           </div>

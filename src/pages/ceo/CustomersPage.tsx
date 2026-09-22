@@ -26,7 +26,7 @@ export const CustomersPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header with Filter Bar */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Customer Portfolio Dashboard</h1>
@@ -34,13 +34,7 @@ export const CustomersPage: React.FC = () => {
             86 active enterprise accounts · 4 require immediate SLA attention · Total ACV ₹18.7 Cr
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <FilterBar showDepartment={false} />
-          <div className="ref-quote-box">
-            <span className="ref-quote-text">"Client Trust. High Standards."</span>
-            <div className="ref-quote-line" />
-          </div>
-        </div>
+        <FilterBar showDepartment={false} />
       </div>
 
       {/* 6 Soft Tinted KPI Cards Row */}

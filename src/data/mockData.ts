@@ -27,13 +27,10 @@ export const COMPANY_INFO = {
   locations: ['Mumbai', 'Pune', 'Bengaluru', 'Hyderabad', 'Delhi NCR'],
   departments: [
     'Field Operations',
-    'Engineering',
+    'Engineering & Automation',
     'Customer Support',
-    'Sales',
-    'Finance',
-    'Human Resources',
-    'Procurement',
-    'Administration',
+    'Sales & Enterprise Accounts',
+    'Administration & HR',
   ],
 };
 

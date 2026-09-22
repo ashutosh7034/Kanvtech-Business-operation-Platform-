@@ -219,45 +219,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        <div className="sidebar-watermark">
-          <div className="watermark-icon-row">
-            <Users size={22} className="watermark-emblem" />
-          </div>
-          <div className="watermark-text">
-            {isCeo ? (
-              <>
-                <span>Operational Clarity</span>
-                <span>Better Decisions</span>
-              </>
-            ) : currentTab === 'payroll' ? (
-              <>
-                <span>Pay People</span>
-                <span>Empower Growth</span>
-              </>
-            ) : currentTab === 'attendance' ? (
-              <>
-                <span>Time Discipline</span>
-                <span>Better Tomorrow</span>
-              </>
-            ) : currentTab === 'leave' ? (
-              <>
-                <span>People Wellness</span>
-                <span>Drives Success</span>
-              </>
-            ) : currentTab === 'performance' ? (
-              <>
-                <span>Empower People</span>
-                <span>Unlock Potential</span>
-              </>
-            ) : (
-              <>
-                <span>Great People Build</span>
-                <span>Great Companies</span>
-              </>
-            )}
-          </div>
-        </div>
-
         <div className="sidebar-footer">
           <button
             className="sidebar-switch-role-btn"

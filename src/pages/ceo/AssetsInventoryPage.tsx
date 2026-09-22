@@ -18,17 +18,13 @@ export const AssetsInventoryPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Assets &amp; Inventory Dashboard</h1>
           <p className="ref-page-subtitle">
             1,284 tracked assets · 91.6% operational health across 5 regional plant hubs
           </p>
-        </div>
-        <div className="ref-quote-box">
-          <span className="ref-quote-text">"Asset Reliability. Zero Downtime."</span>
-          <div className="ref-quote-line" />
         </div>
       </div>
 

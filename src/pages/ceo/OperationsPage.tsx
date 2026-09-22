@@ -26,7 +26,7 @@ export const OperationsPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Top Page Header with Context Quote */}
+      {/* Top Page Header with Filter Bar */}
       <div className="ref-page-header">
         <div>
           <h1 className="ref-page-title">Service Operations Dashboard</h1>
@@ -34,13 +34,7 @@ export const OperationsPage: React.FC = () => {
             186 open work orders · 12 currently at SLA risk across 5 regional hubs
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <FilterBar showDepartment={false} />
-          <div className="ref-quote-box">
-            <span className="ref-quote-text">"Precision Service. Rapid Resolution."</span>
-            <div className="ref-quote-line" />
-          </div>
-        </div>
+        <FilterBar showDepartment={false} />
       </div>
 
       {/* 6 Soft Tinted KPI Cards Row */}
